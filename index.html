@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahumados Artesanales - Tienda Online</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .bg-wood { background-color: #1a1614; }
+    .bg-wood-card { background-color: #27221f; }
+    .border-wood { border-color: #3d3530; }
+    .text-smoke { color: #d1c7bd; }
+    .text-gold { color: #f39c12; }
+    .bg-gold { background-color: #f39c12; }
+    .hover-bg-gold:hover { background-color: #d3830e; }
+  </style>
+</head>
+<body class="bg-wood text-smoke min-h-screen font-sans flex flex-col justify-between">
+  <!-- NAVBAR -->
+  <header class="bg-black/60 backdrop-blur border-b border-wood sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
+      <div class="flex items-center space-x-2 cursor-pointer shrink-0" onclick="switchTab('store')">
+        <i class="fa-solid fa-fire-burner text-gold text-xl sm:text-2xl"></i>
+        <span class="font-bold text-base sm:text-xl text-white tracking-wider">
+          AHUMADOS <span class="text-gold hidden sm:inline">EXPRESS</span><span class="text-gold inline sm:hidden">EXP</span>
+        </span>
+      </div>
+      <div class="flex items-center space-x-1.5 sm:space-x-3">
+        <div id="tasa-bcv-badge" class="hidden md:flex items-center bg-wood border border-wood px-2 py-1 rounded-lg text-xs text-gold font-bold">
+          <i class="fa-solid fa-chart-line mr-1"></i> Tasa Bs: <span id="tasa-valor">...</span> <span class="text-gray-400 font-normal ml-1" id="tasa-fecha"></span>
+        </div>
+        <button onclick="switchTab('store')" class="text-xs sm:text-sm font-medium hover:text-gold px-2 py-1.5 rounded-lg transition flex items-center">
+          <i class="fa-solid fa-store mr-1"></i> <span class="hidden sm:inline">Catálogo</span>
+        </button>
+        <button onclick="switchTab('admin')" class="text-xs sm:text-sm font-medium hover:text-gold px-2 py-1.5 rounded-lg transition flex items-center">
+          <i class="fa-solid fa-user-gear mr-1"></i> <span class="hidden sm:inline">Admin</span>
+        </button>
+        <button onclick="toggleCartDrawer()" class="relative bg-gold text-black px-3 py-1.5 rounded-lg font-semibold hover-bg-gold transition text-xs sm:text-sm flex items-center">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+    <!-- SECCIÓN 1: VISTA DE LA TIENDA -->
+    <section id="tab-store" class="space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-wood-card p-4 rounded-xl border border-wood">
+        <div class="relative w-full md:w-80">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+          <input type="text" id="search-input" oninput="filterProducts()" placeholder="Buscar ahumados..." class="w-full bg-wood border border-wood rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-gold text-white">
+        </div>
+        <div class="flex space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="category-filters">
+          <button onclick="filterCategory('todos', this)" class="cat-btn bg-gold text-black font-semibold px-4 py-1.5 rounded-lg text-sm">Todos</button>
+          <button onclick="filterCategory('Carnes', this)" class="cat-btn bg-wood border border-wood hover:border-gold px-4 py-1.5 rounded-lg text-sm">Carnes</button>
+          <button onclick="filterCategory('Embutidos', this)" class="cat-btn bg-wood border border-wood hover:border-gold px-4 py-1.5 rounded-lg text-sm">Embutidos</button>
+          <button onclick="filterCategory('Quesos', this)" class="cat-btn bg-wood border border-wood hover:border-gold px-4 py-1.5 rounded-lg text-sm">Quesos</button>
+        </div>
+      </div>
+      <!-- GRID DE PRODUCTOS -->
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="col-span-full text-center py-12 text-gray-400">
+          <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-gold"></i>
+          <p>Cargando exquisitos ahumados...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN -->
+    <section id="tab-admin" class="hidden space-y-6">
+      <!-- LOGIN ADMIN -->
+      <div id="admin-login-card" class="max-w-md mx-auto bg-wood-card border border-wood rounded-xl p-6 text-center space-y-4">
+        <i class="fa-solid fa-lock text-4xl text-gold"></i>
+        <h2 class="text-xl font-bold text-white">Acceso Administrativo</h2>
+        <p class="text-xs text-gray-400">Introduce la contraseña para gestionar la tienda</p>
+        <div class="relative">
+          <input type="password" id="admin-pass" placeholder="Contraseña de admin" class="w-full bg-wood border border-wood rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:border-gold" onkeydown="if(event.key==='Enter') loginAdmin()">
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-gray-400 hover:text-white">
+            <i class="fa-solid fa-eye" id="toggle-eye-icon"></i>
+          </button>
+        </div>
+        <button onclick="loginAdmin()" class="w-full bg-gold text-black font-bold py-2 rounded-lg hover-bg-gold transition">
+          Ingresar al Panel
+        </button>
+      </div>
+
+      <!-- DASHBOARD ADMIN -->
+      <div id="admin-dashboard" class="hidden space-y-6">
+        
+        <!-- CONTROL DE TASA BCV (Responsivo adaptado para móvil) -->
+        <div class="bg-wood-card p-4 rounded-xl border border-wood flex flex-col gap-3">
+          <div>
+            <h3 class="font-bold text-white text-base"><i class="fa-solid fa-coins text-gold mr-2"></i>Actualizar Tasa BCV Diaria</h3>
+            <p class="text-xs text-gray-400">Modifica la cotización oficial del dólar y su fecha en formato dd/mm/aaaa.</p>
+          </div>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
+            <input type="number" step="0.01" id="admin-nueva-tasa" placeholder="Ej. 36.50" class="bg-wood border border-wood rounded px-3 py-2 text-sm text-white w-full sm:w-32 focus:border-gold">
+            <input type="text" id="admin-fecha-tasa" placeholder="dd/mm/aaaa" class="bg-wood border border-wood rounded px-3 py-2 text-sm text-white w-full sm:w-32 focus:border-gold">
+            <button onclick="actualizarTasaAdmin()" class="bg-gold text-black font-bold px-4 py-2 rounded text-sm hover-bg-gold transition text-center">Guardar Tasa</button>
+          </div>
+        </div>
+
+        <!-- CABECERA PRODUCTOS (Responsiva) -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-wood pb-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-gold mr-2"></i>Mantenimiento de Productos</h2>
+          <button onclick="openProductModal()" class="w-full sm:w-auto bg-gold text-black font-bold px-4 py-2 rounded-lg hover-bg-gold transition text-sm text-center">
+            <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
+          </button>
+        </div>
+
+        <!-- TABLA DE PRODUCTOS -->
+        <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-300 min-w-[500px]">
+            <thead class="bg-black/40 text-gold uppercase text-xs">
+              <tr>
+                <th class="p-3">Imagen</th>
+                <th class="p-3">Nombre</th>
+                <th class="p-3">Categoría</th>
+                <th class="p-3">Precio Ref ($ / Bs)</th>
+                <th class="p-3">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-products-table" class="divide-y divide-wood"></tbody>
+          </table>
+        </div>
+
+        <!-- TABLA DE PEDIDOS -->
+        <h2 class="text-xl font-bold text-white pt-6 border-b border-wood pb-2"><i class="fa-solid fa-receipt text-gold mr-2"></i>Historial de Pedidos</h2>
+        <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-300 min-w-[700px]">
+            <thead class="bg-black/40 text-gold uppercase text-xs">
+              <tr>
+                <th class="p-3">Fecha</th>
+                <th class="p-3">ID Pedido</th>
+                <th class="p-3">Cliente</th>
+                <th class="p-3">Referencia</th>
+                <th class="p-3">Monto Bs</th>
+                <th class="p-3">Productos</th>
+                <th class="p-3">Status / Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-table" class="divide-y divide-wood"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: CREAR/EDITAR PRODUCTO -->
+  <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-wood-card border border-wood rounded-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-wood pb-2">
+        <h3 id="modal-title" class="text-lg font-bold text-white">Nuevo Producto</h3>
+        <button onclick="closeProductModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3">
+        <input type="hidden" id="prod-id">
+        <div>
+          <label class="text-xs text-gray-400">Nombre del Producto</label>
+          <input type="text" id="prod-nombre" required class="w-full bg-wood border border-wood rounded p-2 text-sm text-white focus:border-gold">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-gray-400">Categoría</label>
+            <select id="prod-categoria" required class="w-full bg-wood border border-wood rounded p-2 text-sm text-white focus:border-gold">
+              <option value="Carnes">Carnes</option>
+              <option value="Embutidos">Embutidos</option>
+              <option value="Quesos">Quesos</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400">Precio en Dólares ($)</label>
+            <input type="number" step="0.01" id="prod-precio" required class="w-full bg-wood border border-wood rounded p-2 text-sm text-white focus:border-gold">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Descripción</label>
+          <textarea id="prod-descripcion" rows="2" class="w-full bg-wood border border-wood rounded p-2 text-sm text-white focus:border-gold"></textarea>
+        </div>
+        <div class="space-y-2 border-t border-wood pt-2">
+          <label class="text-xs font-bold text-gold">Imagen del Producto</label>
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Opción A: Subir desde Teléfono / PC</label>
+            <input type="file" id="prod-file-input" accept="image/*" onchange="previewFileImage(this)" class="w-full text-xs text-gray-400 bg-wood border border-wood rounded p-1 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-gold file:text-black file:font-semibold">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Opción B: Pegar URL de Imagen</label>
+            <input type="url" id="prod-imagen" placeholder="https://..." class="w-full bg-wood border border-wood rounded p-2 text-sm text-white focus:border-gold">
+          </div>
+          <div id="image-preview-container" class="mt-2 hidden">
+            <span class="text-xs text-gray-400">Vista Previa:</span>
+            <img id="image-preview" src="" class="h-24 w-full object-cover rounded border border-wood mt-1">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-4 border-t border-wood">
+          <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-gray-700 text-white text-sm rounded">Cancelar</button>
+          <button type="submit" id="btn-save-prod" class="px-4 py-2 bg-gold text-black font-bold text-sm rounded hover-bg-gold">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DRAWER: CARRITO Y CHECKOUT -->
+  <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-wood-card border-l border-wood shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
+    <div class="p-4 border-b border-wood flex justify-between items-center bg-black/40">
+      <h3 class="font-bold text-lg text-white"><i class="fa-solid fa-basket-shopping text-gold mr-2"></i>Tu Pedido</h3>
+      <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    </div>
+    <div id="cart-items" class="p-4 flex-grow overflow-y-auto space-y-3"></div>
+    <div class="p-4 border-t border-wood bg-black/60 space-y-3">
+      <div class="space-y-1 bg-wood p-2 rounded border border-wood">
+        <div class="flex justify-between font-bold text-white text-sm">
+          <span>Total Dólares:</span>
+          <span id="cart-total-usd" class="text-gold">$0.00</span>
+        </div>
+        <div class="flex justify-between font-bold text-white text-sm">
+          <span>Total Bolívares (A Pagar):</span>
+          <span id="cart-total-bs" class="text-gold">Bs. 0,00</span>
+        </div>
+      </div>
+      <div id="checkout-form" class="space-y-2 text-xs">
+        <input type="text" id="cli-nombre" placeholder="Nombre y Apellido *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="cli-cedula" placeholder="Cédula / RIF *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
+          <input type="tel" id="cli-telefono" placeholder="Teléfono WhatsApp *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
+        </div>
+        <textarea id="cli-direccion" placeholder="Dirección de Entrega / Delivery *" rows="2" class="w-full bg-wood border border-wood rounded p-2 text-white"></textarea>
+        
+        <div class="border-t border-wood pt-2 space-y-2">
+          <span class="font-bold text-gold block">Detalles de Pago Móvil (Obligatorio en Bs):</span>
+          <div class="grid grid-cols-2 gap-2">
+            <select id="pago-banco" required class="w-full bg-wood border border-wood rounded p-2 text-white text-xs">
+              <option value="">Seleccione Banco *</option>
+              <option value="0102 - Banco de Venezuela">0102 - Banco de Venezuela</option>
+              <option value="0105 - Banco Mercantil">0105 - Banco Mercantil</option>
+              <option value="0108 - Banco Provincial">0108 - Banco Provincial</option>
+              <option value="0134 - Banesco">0134 - Banesco</option>
+              <option value="0114 - Bancaribe">0114 - Bancaribe</option>
+              <option value="0151 - Fondo Común">0151 - Fondo Común (BFC)</option>
+              <option value="0191 - BNC">0191 - BNC</option>
+              <option value="0115 - Banco Exterior">0115 - Banco Exterior</option>
+              <option value="0128 - Banco Caroní">0128 - Banco Caroní</option>
+              <option value="0163 - Banco del Tesoro">0163 - Banco del Tesoro</option>
+              <option value="0175 - Bicentenario">0175 - Bicentenario</option>
+              <option value="0177 - Banplus">0177 - Banplus</option>
+              <option value="0156 - 100% Banco">0156 - 100% Banco</option>
+              <option value="0172 - Bancamiga">0172 - Bancamiga</option>
+              <option value="0168 - Bancrecer">0168 - Bancrecer</option>
+              <option value="0174 - Banco Activo">0174 - Banco Activo</option>
+            </select>
+            <input type="text" id="pago-referencia" placeholder="N° Referencia *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
+          </div>
+          <input type="number" step="0.01" id="pago-monto-bs" placeholder="Monto Exacto Pagado en Bs *" required class="w-full bg-wood border border-wood rounded p-2 text-white font-bold text-gold">
+        </div>
+        <button onclick="procesarOrden()" id="btn-completar" class="w-full bg-gold text-black font-bold py-2.5 rounded-lg hover-bg-gold transition mt-2 text-sm">
+          Confirmar y Enviar Orden
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbx9LDyr-ioAjpw_fs2h_3A7X3AYFTSvUPZwXdyz03vfvqbIq__L8bITUx6CDCiSg4hQbQ/exec";
+    let productos = [];
+    let carrito = [];
+    let pedidosGlobal = [];
+    let tasaBCV = 36.50; 
+    let fechaBCV = "";
+    let currentImageBase64 = null;
+    let currentCategory = 'todos';
+    const ADMIN_PASS = "admin123";
+
+    window.onload = () => {
+      switchTab('store');
+      cargarDatosIniciales();
+    };
+
+    function formatearFechaDDMMYYYY(fechaInput) {
+      if (!fechaInput) return "N/A";
+      let d = new Date(fechaInput);
+      if (isNaN(d.getTime())) return fechaInput.toString();
+      let dia = String(d.getDate()).padStart(2, '0');
+      let mes = String(d.getMonth() + 1).padStart(2, '0');
+      let anio = d.getFullYear();
+      return `${dia}/${mes}/${anio}`;
+    }
+
+    function switchTab(tab) {
+      document.getElementById('tab-store').classList.add('hidden');
+      document.getElementById('tab-admin').classList.add('hidden');
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+      if (tab === 'store') cerrarSesionAdmin();
+      if(tab === 'admin' && !document.getElementById('admin-dashboard').classList.contains('hidden')) {
+        cargarDatosIniciales();
+      }
+    }
+
+    function cerrarSesionAdmin() {
+      document.getElementById('admin-dashboard').classList.add('hidden');
+      document.getElementById('admin-login-card').classList.remove('hidden');
+      document.getElementById('admin-pass').value = '';
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('admin-pass');
+      const eyeIcon = document.getElementById('toggle-eye-icon');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        passInput.type = 'password';
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+
+    function loginAdmin() {
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === ADMIN_PASS) {
+        document.getElementById('admin-login-card').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+        let hoy = new Date();
+        let anio = hoy.getFullYear();
+        let mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        let dia = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById('admin-nueva-tasa').value = tasaBCV;
+        document.getElementById('admin-fecha-tasa').value = `${dia}/${mes}/${anio}`;
+        cargarDatosIniciales();
+      } else {
+        Swal.fire({
+          icon: 'error', title: 'Acceso Denegado', text: 'Contraseña incorrecta.',
+          background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12'
+        });
+      }
+    }
+
+    async function cargarDatosIniciales() {
+      try {
+        const resTasa = await fetch(`${API_URL}?action=getTasaBCV`).then(r => r.json());
+        tasaBCV = resTasa.tasa || 36.50;
+        fechaBCV = formatearFechaDDMMYYYY(resTasa.fecha);
+        document.getElementById('tasa-valor').innerText = tasaBCV.toFixed(2);
+        document.getElementById('tasa-fecha').innerText = fechaBCV ? `(${fechaBCV})` : "";
+        const resProds = await fetch(`${API_URL}?action=getProductos`).then(r => r.json());
+        productos = resProds || [];
+        filterProducts();
+        if (!document.getElementById('admin-dashboard').classList.contains('hidden')) {
+          renderAdminTables();
+          const resPedidos = await fetch(`${API_URL}?action=getPedidos`).then(r => r.json());
+          pedidosGlobal = resPedidos || [];
+          renderOrdersTable(pedidosGlobal);
+        }
+      } catch (e) {
+        console.warn("Modo offline o error al conectar:", e);
+        filterProducts();
+      }
+    }
+
+    async function actualizarTasaAdmin() {
+      let nuevaTasa = document.getElementById('admin-nueva-tasa').value;
+      let nuevaFecha = document.getElementById('admin-fecha-tasa').value;
+      if (!nuevaTasa || !nuevaFecha) {
+        return Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Introduce la tasa y la fecha.', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "guardarTasaBCV", tasa: nuevaTasa, fecha: nuevaFecha })
+      }).then(r => r.json());
+      if (res.success) {
+        Swal.fire({ icon: 'success', title: '¡Tasa Actualizada!', text: `Nueva Tasa: Bs. ${nuevaTasa} (${nuevaFecha})`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+        cargarDatosIniciales();
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+    }
+
+    function normalizarTexto(txt) {
+      if (!txt) return '';
+      return txt.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
+
+    function filterCategory(cat, btnElement) {
+      currentCategory = cat;
+      const buttons = document.querySelectorAll('.cat-btn');
+      buttons.forEach(b => {
+        b.classList.remove('bg-gold', 'text-black', 'font-semibold');
+        b.classList.add('bg-wood', 'text-smoke');
+      });
+      if (btnElement) {
+        btnElement.classList.remove('bg-wood', 'text-smoke');
+        btnElement.classList.add('bg-gold', 'text-black', 'font-semibold');
+      }
+      filterProducts();
+    }
+
+    function filterProducts() {
+      const inputElem = document.getElementById('search-input');
+      const query = normalizarTexto(inputElem ? inputElem.value : '');
+      const filtrados = productos.filter(p => {
+        const nombre = normalizarTexto(p.nombre);
+        const desc = normalizarTexto(p.descripcion);
+        const cat = normalizarTexto(p.categoria);
+        const coincideTipeo = !query || nombre.includes(query) || desc.includes(query) || cat.includes(query);
+        const coincideCat = (currentCategory === 'todos') || (cat === normalizarTexto(currentCategory));
+        return coincideTipeo && coincideCat;
+      });
+      renderProducts(filtrados);
+    }
+
+    function renderProducts(lista) {
+      const grid = document.getElementById('products-grid');
+      if (!lista || lista.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400"><i class="fa-solid fa-box-open text-3xl mb-2 text-gold block"></i>No se encontraron ahumados.</div>`;
+        return;
+      }
+      grid.innerHTML = lista.map(p => {
+        const precioUSD = parseFloat(p.precio) || 0;
+        const precioBs = (precioUSD * tasaBCV).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return `
+          <div class="bg-wood-card border border-wood rounded-xl overflow-hidden flex flex-col justify-between hover:border-gold transition shadow-md">
+            <img src="${p.imagenUrl || ''}" class="h-48 w-full object-cover">
+            <div class="p-4 flex-grow flex flex-col justify-between space-y-2">
+              <div>
+                <span class="text-xs font-bold text-gold uppercase tracking-wider">${p.categoria}</span>
+                <h3 class="font-bold text-lg text-white">${p.nombre}</h3>
+                <p class="text-xs text-gray-400 line-clamp-2">${p.descripcion || ''}</p>
+              </div>
+              <div class="pt-2 border-t border-wood">
+                <div class="flex justify-between items-center mb-2">
+                  <div>
+                    <span class="text-lg font-bold text-gold">$${precioUSD.toFixed(2)}</span>
+                    <span class="text-xs text-gray-400 block">Bs. ${precioBs}</span>
+                  </div>
+                  <button onclick="addToCart('${p.id}')" class="bg-gold text-black px-3 py-1.5 rounded-lg text-xs font-bold hover-bg-gold transition">
+                    <i class="fa-solid fa-cart-plus mr-1"></i> Agregar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCartDrawer() {
+      document.getElementById('cart-drawer').classList.toggle('translate-x-full');
+    }
+
+    function addToCart(id) {
+      const prod = productos.find(p => p.id.toString() === id.toString());
+      if (!prod) return;
+      const item = carrito.find(c => c.id.toString() === id.toString());
+      if (item) item.cant++;
+      else carrito.push({...prod, cant: 1});
+      updateCartUI();
+      Swal.fire({
+        toast: true, position: 'top-end', icon: 'success', title: `${prod.nombre} añadido`,
+        showConfirmButton: false, timer: 1500, background: '#27221f', color: '#ffffff'
+      });
+    }
+
+    function updateCartUI() {
+      const totalCount = carrito.reduce((acc, item) => acc + item.cant, 0);
+      document.getElementById('cart-count').innerText = totalCount;
+      const container = document.getElementById('cart-items');
+      if (carrito.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-400 py-8 text-sm">Tu carrito está vacío</p>`;
+        document.getElementById('cart-total-usd').innerText = "$0.00";
+        document.getElementById('cart-total-bs').innerText = "Bs. 0,00";
+        return;
+      }
+      let totalUSD = 0;
+      container.innerHTML = carrito.map((item, index) => {
+        const subtotalUSD = item.precio * item.cant;
+        const subtotalBs = (subtotalUSD * tasaBCV).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        totalUSD += subtotalUSD;
+        return `
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-wood p-3 rounded-lg border border-wood gap-2 text-xs">
+            <div class="w-full sm:w-auto flex-grow pr-1">
+              <p class="font-bold text-white text-sm break-words">${item.nombre}</p>
+              <p class="text-gray-400">$${item.precio.toFixed(2)} c/u</p>
+              <p class="text-gold font-bold mt-0.5">Subtotal: $${subtotalUSD.toFixed(2)} <span class="text-gray-300 font-normal">(Bs. ${subtotalBs})</span></p>
+            </div>
+            <div class="flex items-center justify-end w-full sm:w-auto space-x-2 pt-2 sm:pt-0 border-t sm:border-0 border-wood">
+              <button onclick="changeCant(${index}, -1)" class="bg-wood-card px-2.5 py-1 rounded text-gray-300 font-bold hover:text-white transition">-</button>
+              <span class="text-white font-semibold px-1">${item.cant}</span>
+              <button onclick="changeCant(${index}, 1)" class="bg-wood-card px-2.5 py-1 rounded text-gray-300 font-bold hover:text-white transition">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      const totalBsVal = totalUSD * tasaBCV;
+      const totalBsStr = totalBsVal.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('cart-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
+      document.getElementById('cart-total-bs').innerText = `Bs. ${totalBsStr}`;
+    }
+
+    function changeCant(index, delta) {
+      carrito[index].cant += delta;
+      if (carrito[index].cant <= 0) carrito.splice(index, 1);
+      updateCartUI();
+    }
+
+    function meLimpiarFormularioCheckout() {
+      document.getElementById('cli-nombre').value = '';
+      document.getElementById('cli-cedula').value = '';
+      document.getElementById('cli-telefono').value = '';
+      document.getElementById('cli-direccion').value = '';
+      document.getElementById('pago-banco').value = '';
+      document.getElementById('pago-referencia').value = '';
+      document.getElementById('pago-monto-bs').value = '';
+    }
+
+    async function procesarOrden() {
+      if (carrito.length === 0) {
+        return Swal.fire({ icon: 'warning', title: 'Carrito Vacío', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+      const totalUSD = carrito.reduce((acc, item) => acc + (item.precio * item.cant), 0);
+      const totalBsEsperado = parseFloat((totalUSD * tasaBCV).toFixed(2));
+      const montoIngresado = parseFloat(document.getElementById('pago-monto-bs').value) || 0;
+      
+      if (Math.abs(montoIngresado - totalBsEsperado) > 0.05) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Monto Incorrecto',
+          text: `El pago móvil debe ser exactamente de Bs. ${totalBsEsperado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Verifique el monto ingresado.`,
+          background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12'
+        });
+      }
+
+      const orden = {
+        cliente: document.getElementById('cli-nombre').value,
+        cedula: document.getElementById('cli-cedula').value,
+        telefono: document.getElementById('cli-telefono').value,
+        direccion: document.getElementById('cli-direccion').value,
+        banco: document.getElementById('pago-banco').value,
+        referencia: document.getElementById('pago-referencia').value,
+        monto: montoIngresado,
+        totalOrden: `Bs. ${montoIngresado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ($${totalUSD.toFixed(2)})`,
+        productos: carrito.map(i => `${i.cant}x ${i.nombre}`).join(', ')
+      };
+
+      if (!orden.cliente || !orden.cedula || !orden.banco || !orden.referencia || !orden.monto || !orden.direccion) {
+        return Swal.fire({ icon: 'info', title: 'Completa todos los datos del formulario (incluyendo la dirección de entrega)', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+
+      const btn = document.getElementById('btn-completar');
+      btn.innerText = "Registrando Orden...";
+      btn.disabled = true;
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "registrarPedido", pedido: orden })
+      }).then(r => r.json());
+
+      btn.innerText = "Confirmar y Enviar Orden";
+      btn.disabled = false;
+
+      if (res.success) {
+        const telefonoAdmin = "584120000000"; // <--- CAMBIA ESTE NÚMERO POR TU WHATSAPP (código país + número)
+        const mensajeAdmin = `¡Hola Admin! 🛒 Hay un nuevo pedido registrado.%0A%0A` +
+                             `*N° Pedido:* ${res.idPedido}%0A` +
+                             `*Cliente:* ${orden.cliente}%0A` +
+                             `*Cédula:* ${orden.cedula}%0A` +
+                             `*Teléfono:* ${orden.telefono}%0A` +
+                             `*Dirección / Delivery:* ${orden.direccion}%0A` +
+                             `*Total Pagado:* ${orden.totalOrden}%0A` +
+                             `*Productos:* ${orden.productos}%0A` +
+                             `*Banco:* ${orden.banco}%0A` +
+                             `*Referencia:* ${orden.referencia}`;
+        
+        window.open(`https://wa.me/${telefonoAdmin}?text=${mensajeAdmin}`, '_blank');
+
+        Swal.fire({ icon: 'success', title: '¡Orden Registrada!', text: `N°: ${res.idPedido}.`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+        
+        carrito = [];
+        meLimpiarFormularioCheckout();
+        updateCartUI();
+        toggleCartDrawer();
+        cargarDatosIniciales();
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+    }
+
+    function renderAdminTables() {
+      const tbody = document.getElementById('admin-products-table');
+      if (!productos || productos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay productos.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = productos.map(p => {
+        const precioBs = (p.precio * tasaBCV).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return `
+          <tr>
+            <td class="p-3"><img src="${p.imagenUrl || ''}" class="h-10 w-10 object-cover rounded border border-wood"></td>
+            <td class="p-3 font-bold text-white">${p.nombre}</td>
+            <td class="p-3">${p.categoria}</td>
+            <td class="p-3 text-gold">$${parseFloat(p.precio).toFixed(2)} <span class="text-xs text-gray-400 block">Bs. ${precioBs}</span></td>
+            <td class="p-3 space-x-3">
+              <button onclick="editProduct('${p.id}')" class="text-blue-400 hover:text-blue-300" title="Editar"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteProduct('${p.id}')" class="text-red-400 hover:text-red-300" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderOrdersTable(pedidos) {
+      const tbody = document.getElementById('admin-orders-table');
+      if (!pedidos || pedidos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-400">No hay pedidos registrados todavía.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = pedidos.map(o => {
+        const isConfirmado = o.status === 'Confirmado';
+        const badgeColor = isConfirmado ? 'bg-green-600/30 text-green-400 border-green-600' : 'bg-yellow-600/30 text-yellow-400 border-yellow-600';
+        const montoFormateado = !isNaN(o.monto) ? 'Bs. ' + parseFloat(o.monto).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : o.monto;
+        const fechaFormateada = formatearFechaDDMMYYYY(o.fecha);
+        return `
+          <tr>
+            <td class="p-3 text-xs text-gray-400 whitespace-nowrap">${fechaFormateada}</td>
+            <td class="p-3 font-bold text-gold">${o.idPedido}</td>
+            <td class="p-3 text-white">${o.cliente}<br><span class="text-xs text-gray-400">Céd: ${o.cedula} | Tel: ${o.telefono}</span><br><span class="text-xs text-gray-400">Dir: ${o.direccion || 'N/A'}</span></td>
+            <td class="p-3 text-xs">${o.referencia}<br><span class="text-gray-400">${o.banco}</span></td>
+            <td class="p-3 text-gold font-bold">${montoFormateado}</td>
+            <td class="p-3 text-xs text-gray-300">${o.productos}</td>
+            <td class="p-3 space-y-2">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${badgeColor} inline-block">${o.status}</span>
+              ${!isConfirmado ? `<button onclick="cambiarStatus('${o.idPedido}', 'Confirmado')" class="block text-xs bg-gold text-black font-bold px-2 py-0.5 rounded hover-bg-gold transition">Confirmar Pago</button>` : ''}
+              <button onclick="deleteOrder('${o.idPedido}')" class="block text-xs bg-red-600/80 text-white font-bold px-2 py-0.5 rounded hover:bg-red-700 transition" title="Eliminar Pedido"><i class="fa-solid fa-trash mr-1"></i> Borrar</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function cambiarStatus(idPedido, nuevoStatus) {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "actualizarStatusPedido", idPedido: idPedido, nuevoStatus: nuevoStatus })
+      }).then(r => r.json());
+
+      if (res.success) {
+        Swal.fire({
+          toast: true, position: 'top-end', icon: 'success',
+          title: `Pedido ${idPedido} ${nuevoStatus}`, showConfirmButton: false, timer: 1500,
+          background: '#27221f', color: '#ffffff'
+        });
+
+        // NOTIFICACIÓN AL CLIENTE POR WHATSAPP AL CONFIRMAR EL PAGO (GARANTIZADA)
+        if (nuevoStatus === 'Confirmado') {
+          // Buscamos directamente el pedido en el array global actual
+          const pedidoActual = pedidosGlobal.find(o => o.idPedido.toString().trim() === idPedido.toString().trim());
+          
+          if (pedidoActual && pedidoActual.telefono) {
+            let tlfCliente = pedidoActual.telefono.replace(/\D/g, '');
+            const mensajeCliente = `¡Hola ${pedidoActual.cliente}! 🎉 Tu pago y pedido N° *${idPedido}* han sido *CONFIRMADOS* exitosamente.%0A` +
+                                 `Dirección registrada: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
+                                 `Estamos preparando tus ahumados artesanales para despacho/delivery. ¡Gracias por tu compra! 🥩🔥`;
+            
+            window.open(`https://wa.me/${tlfCliente}?text=${mensajeCliente}`, '_blank');
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Aviso',
+              text: 'El estatus se actualizó, pero no se encontró un número de teléfono válido para abrir el chat del cliente.',
+              background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12'
+            });
+          }
+        }
+
+        cargarDatosIniciales();
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+    }
+
+    function deleteOrder(idPedido) {
+      Swal.fire({
+        title: '¿Eliminar Pedido?', text: `Se borrará permanentemente la orden ${idPedido}.`,
+        icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, borrar', cancelButtonText: 'Cancelar', background: '#27221f', color: '#d1c7bd'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const res = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "eliminarPedido", idPedido: idPedido })
+          }).then(r => r.json());
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Pedido Eliminado', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+            cargarDatosIniciales();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+          }
+        }
+      });
+    }
+
+    function openProductModal() {
+      document.getElementById('product-form').reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('modal-title').innerText = "Nuevo Producto";
+      document.getElementById('image-preview-container').classList.add('hidden');
+      currentImageBase64 = null;
+      document.getElementById('product-modal').classList.remove('hidden');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.add('hidden');
+    }
+
+    function editProduct(id) {
+      const prod = productos.find(p => p.id.toString() === id.toString());
+      if (!prod) return;
+      document.getElementById('prod-id').value = prod.id;
+      document.getElementById('prod-nombre').value = prod.nombre;
+      document.getElementById('prod-categoria').value = prod.categoria;
+      document.getElementById('prod-precio').value = prod.precio;
+      document.getElementById('prod-descripcion').value = prod.descripcion || '';
+      document.getElementById('prod-imagen').value = prod.imagenUrl || '';
+      if (prod.imagenUrl) {
+        document.getElementById('image-preview').src = prod.imagenUrl;
+        document.getElementById('image-preview-container').classList.remove('hidden');
+      } else {
+        document.getElementById('image-preview-container').classList.add('hidden');
+      }
+      currentImageBase64 = null;
+      document.getElementById('modal-title').innerText = "Editar Producto";
+      document.getElementById('product-modal').classList.remove('hidden');
+    }
+
+    function deleteProduct(id) {
+      Swal.fire({
+        title: '¿Estás seguro?', text: "Se eliminará permanentemente de la hoja.",
+        icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar', background: '#27221f', color: '#d1c7bd'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const res = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "eliminarProducto", id: id })
+          }).then(r => r.json());
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Eliminado', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+            cargarDatosIniciales();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+          }
+        }
+      });
+    }
+
+    function previewFileImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageBase64 = e.target.result;
+          document.getElementById('image-preview').src = currentImageBase64;
+          document.getElementById('image-preview-container').classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    async function saveProduct(e) {
+      e.preventDefault();
+      const prod = {
+        id: document.getElementById('prod-id').value,
+        nombre: document.getElementById('prod-nombre').value,
+        categoria: document.getElementById('prod-categoria').value,
+        precio: document.getElementById('prod-precio').value,
+        descripcion: document.getElementById('prod-descripcion').value,
+        imagenUrl: document.getElementById('prod-imagen').value,
+        imagenBase64: currentImageBase64
+      };
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "guardarProducto", producto: prod })
+      }).then(r => r.json());
+      if (res.success) {
+        closeProductModal();
+        cargarDatosIniciales();
+        Swal.fire({ icon: 'success', title: '¡Guardado!', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      }
+    }
+  </script>
+</body>
+</html>
