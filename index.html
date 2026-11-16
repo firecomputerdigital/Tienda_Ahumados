@@ -639,6 +639,14 @@
     }
 
    async function cambiarStatus(idPedido, nuevoStatus) {
+      // 1. Mostrar un indicador visual rápido de que se está procesando
+      Swal.fire({
+        toast: true, position: 'top-end', icon: 'info',
+        title: `Actualizando pedido ${idPedido}...`, showConfirmButton: false, timer: 1000,
+        background: '#27221f', color: '#ffffff'
+      });
+
+      // 2. Enviar la petición POST al Apps Script para cambiar el estatus en la Hoja de Google
       const res = await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "actualizarStatusPedido", idPedido: idPedido, nuevoStatus: nuevoStatus })
@@ -647,41 +655,44 @@
       if (res.success) {
         Swal.fire({
           toast: true, position: 'top-end', icon: 'success',
-          title: `Pedido ${idPedido} ${nuevoStatus}`, showConfirmButton: false, timer: 1500,
+          title: `¡Pedido ${idPedido} ${nuevoStatus}!`, showConfirmButton: false, timer: 1500,
           background: '#27221f', color: '#ffffff'
         });
 
-        // 1. RECARGA INMEDIATA DE LA TABLA SIN CERRAR LA APP
+        // 3. Forzar la recarga inmediata de los datos desde Google Sheets y redibujar la tabla
         await cargarDatosIniciales();
 
-        // 2. NOTIFICACIÓN AL CLIENTE POR WHATSAPP AL CONFIRMAR EL PAGO
+        // 4. Si el estatus es Confirmado, abrir de forma automática el WhatsApp del cliente
         if (nuevoStatus === 'Confirmado') {
+          // Buscamos el pedido en el array global actualizado
           const pedidoActual = pedidosGlobal.find(o => o.idPedido.toString().trim() === idPedido.toString().trim());
           
           if (pedidoActual && pedidoActual.telefono) {
+            // Limpiamos cualquier carácter extraño del teléfono (letras, espacios, guiones)
             let tlfCliente = pedidoActual.telefono.replace(/\D/g, '');
+            
             const mensajeCliente = `¡Hola ${pedidoActual.cliente}! 🎉 Tu pago y pedido N° *${idPedido}* han sido *CONFIRMADOS* exitosamente.%0A` +
                                  `*Su pedido está en Proceso.* 📦🔥%0A` +
                                  `Dirección registrada: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
                                  `Te avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
             
-            // Usamos un botón directo o enlace seguro para evitar el bloqueo de popups del navegador
+            // Usamos un pequeño retraso para asegurar que el navegador abra la pestaña sin bloqueadores
             setTimeout(() => {
               window.open(`https://wa.me/${tlfCliente}?text=${mensajeCliente}`, '_blank');
-            }, 300);
+            }, 400);
 
           } else {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Aviso',
-              text: 'El estatus se actualizó y se recargó la tabla, pero no se encontró un número de teléfono válido para el cliente.',
-              background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12'
-            });
+            console.warn("No se encontró el teléfono del cliente para este pedido.");
           }
         }
 
       } else {
-        Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+        Swal.fire({ 
+          icon: 'error', 
+          title: 'Error al actualizar', 
+          text: res.error || 'No se pudo comunicar con el servidor.', 
+          background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' 
+        });
       }
     }
 
