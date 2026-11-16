@@ -20,26 +20,24 @@
 <body class="bg-wood text-smoke min-h-screen font-sans flex flex-col justify-between">
   <!-- NAVBAR -->
   <header class="bg-black/60 backdrop-blur border-b border-wood sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
-      <div class="flex items-center space-x-2 cursor-pointer shrink-0" onclick="switchTab('store')">
-        <i class="fa-solid fa-fire-burner text-gold text-xl sm:text-2xl"></i>
-        <span class="font-bold text-base sm:text-xl text-white tracking-wider">
-          AHUMADOS <span class="text-gold hidden sm:inline">EXPRESS</span><span class="text-gold inline sm:hidden">EXP</span>
-        </span>
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('store')">
+        <i class="fa-solid fa-fire-burner text-gold text-2xl"></i>
+        <span class="font-bold text-xl text-white tracking-wider">AHUMADOS <span class="text-gold">EXPRESS</span></span>
       </div>
-      <div class="flex items-center space-x-1.5 sm:space-x-3">
-        <div id="tasa-bcv-badge" class="hidden md:flex items-center bg-wood border border-wood px-2 py-1 rounded-lg text-xs text-gold font-bold">
-          <i class="fa-solid fa-chart-line mr-1"></i> Tasa Bs: <span id="tasa-valor">...</span> <span class="text-gray-400 font-normal ml-1" id="tasa-fecha"></span>
+      <div class="flex items-center space-x-4">
+        <div id="tasa-bcv-badge" class="hidden md:flex items-center bg-wood border border-wood px-3 py-1 rounded-lg text-xs text-gold font-bold">
+          <i class="fa-solid fa-chart-line mr-1"></i> Tasa BCV: Bs. <span id="tasa-valor">...</span> <span class="text-gray-400 font-normal ml-1" id="tasa-fecha"></span>
         </div>
-        <button onclick="switchTab('store')" class="text-xs sm:text-sm font-medium hover:text-gold px-2 py-1.5 rounded-lg transition flex items-center">
-          <i class="fa-solid fa-store mr-1"></i> <span class="hidden sm:inline">Catálogo</span>
+        <button onclick="switchTab('store')" class="text-sm font-medium hover:text-gold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-store mr-1"></i> Catálogo
         </button>
-        <button onclick="switchTab('admin')" class="text-xs sm:text-sm font-medium hover:text-gold px-2 py-1.5 rounded-lg transition flex items-center">
-          <i class="fa-solid fa-user-gear mr-1"></i> <span class="hidden sm:inline">Admin</span>
+        <button onclick="switchTab('admin')" class="text-sm font-medium hover:text-gold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-user-gear mr-1"></i> Panel Admin
         </button>
-        <button onclick="toggleCartDrawer()" class="relative bg-gold text-black px-3 py-1.5 rounded-lg font-semibold hover-bg-gold transition text-xs sm:text-sm flex items-center">
+        <button onclick="toggleCartDrawer()" class="relative bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-bg-gold transition">
           <i class="fa-solid fa-cart-shopping"></i>
-          <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold">0</span>
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
         </button>
       </div>
     </div>
@@ -91,29 +89,28 @@
       <!-- DASHBOARD ADMIN -->
       <div id="admin-dashboard" class="hidden space-y-6">
         <!-- CONTROL DE TASA BCV -->
-        <div class="bg-wood-card p-4 rounded-xl border border-wood flex flex-col gap-3">
-          <div>
+        <div class="bg-wood-card p-4 rounded-xl border border-wood flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="w-full md:w-auto">
             <h3 class="font-bold text-white text-base"><i class="fa-solid fa-coins text-gold mr-2"></i>Actualizar Tasa BCV Diaria</h3>
             <p class="text-xs text-gray-400">Modifica la cotización oficial del dólar y su fecha en formato dd/mm/aaaa.</p>
           </div>
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
-            <input type="number" step="0.01" id="admin-nueva-tasa" placeholder="Ej. 36.50" class="bg-wood border border-wood rounded px-3 py-2 text-sm text-white w-full sm:w-32 focus:border-gold">
-            <input type="text" id="admin-fecha-tasa" placeholder="dd/mm/aaaa" class="bg-wood border border-wood rounded px-3 py-2 text-sm text-white w-full sm:w-32 focus:border-gold">
-            <button onclick="actualizarTasaAdmin()" class="bg-gold text-black font-bold px-4 py-2 rounded text-sm hover-bg-gold transition text-center">Guardar Tasa</button>
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <input type="number" step="0.01" id="admin-nueva-tasa" placeholder="Ej. 36.50" class="bg-wood border border-wood rounded px-3 py-1.5 text-sm text-white w-full sm:w-28 focus:border-gold">
+            <input type="text" id="admin-fecha-tasa" placeholder="dd/mm/aaaa" class="bg-wood border border-wood rounded px-3 py-1.5 text-sm text-white w-full sm:w-28 focus:border-gold">
+            <button onclick="actualizarTasaAdmin()" class="bg-gold text-black font-bold px-4 py-1.5 rounded text-sm hover-bg-gold transition w-full sm:w-auto">Guardar Tasa</button>
           </div>
         </div>
 
-        <!-- CABECERA PRODUCTOS -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-wood pb-4">
-          <h2 class="text-xl sm:text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-gold mr-2"></i>Mantenimiento de Productos</h2>
-          <button onclick="openProductModal()" class="w-full sm:w-auto bg-gold text-black font-bold px-4 py-2 rounded-lg hover-bg-gold transition text-sm text-center">
+          <h2 class="text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-gold mr-2"></i>Mantenimiento de Productos</h2>
+          <button onclick="openProductModal()" class="bg-gold text-black font-bold px-4 py-2 rounded-lg hover-bg-gold transition text-sm w-full sm:w-auto text-center">
             <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
           </button>
         </div>
 
-        <!-- TABLA DE PRODUCTOS (Contenedor responsivo con scroll horizontal) -->
-        <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto shadow-md">
-          <table class="w-full text-left text-sm text-gray-300 min-w-[500px]">
+        <!-- TABLA DE PRODUCTOS -->
+        <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-300">
             <thead class="bg-black/40 text-gold uppercase text-xs">
               <tr>
                 <th class="p-3">Imagen</th>
@@ -129,8 +126,8 @@
 
         <!-- TABLA DE PEDIDOS -->
         <h2 class="text-xl font-bold text-white pt-6 border-b border-wood pb-2"><i class="fa-solid fa-receipt text-gold mr-2"></i>Historial de Pedidos</h2>
-        <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto shadow-md">
-          <table class="w-full text-left text-sm text-gray-300 min-w-[750px]">
+        <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-300">
             <thead class="bg-black/40 text-gold uppercase text-xs">
               <tr>
                 <th class="p-3">Fecha</th>
@@ -203,7 +200,7 @@
     </div>
   </div>
 
-  <!-- DRAWER: CARRITO Y CHECKOUT (Estructura fija responsiva) -->
+  <!-- DRAWER: CARRITO Y CHECKOUT -->
   <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-wood-card border-l border-wood shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
     <div class="p-4 border-b border-wood flex justify-between items-center bg-black/40">
       <h3 class="font-bold text-lg text-white"><i class="fa-solid fa-basket-shopping text-gold mr-2"></i>Tu Pedido</h3>
@@ -227,7 +224,7 @@
           <input type="text" id="cli-cedula" placeholder="Cédula / RIF *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
           <input type="tel" id="cli-telefono" placeholder="Teléfono WhatsApp *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
         </div>
-        <textarea id="cli-direccion" placeholder="Dirección de Entrega / Delivery *" rows="2" class="w-full bg-wood border border-wood rounded p-2 text-white"></textarea>
+        <textarea id="cli-direccion" placeholder="Dirección de Entrega *" rows="2" class="w-full bg-wood border border-wood rounded p-2 text-white"></textarea>
         
         <div class="border-t border-wood pt-2 space-y-2">
           <span class="font-bold text-gold block">Detalles de Pago Móvil (Obligatorio en Bs):</span>
@@ -520,16 +517,15 @@
         const subtotalBs = (subtotalUSD * tasaBCV).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         totalUSD += subtotalUSD;
         return `
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-wood p-3 rounded-lg border border-wood gap-2 text-xs">
-            <div class="w-full sm:w-auto flex-grow pr-1">
-              <p class="font-bold text-white text-sm break-words">${item.nombre}</p>
-              <p class="text-gray-400">$${item.precio.toFixed(2)} c/u</p>
-              <p class="text-gold font-bold mt-0.5">Subtotal: $${subtotalUSD.toFixed(2)} <span class="text-gray-300 font-normal">(Bs. ${subtotalBs})</span></p>
+          <div class="flex justify-between items-center bg-wood p-2.5 rounded border border-wood text-xs">
+            <div class="flex-grow pr-2">
+              <p class="font-bold text-white">${item.nombre}</p>
+              <p class="text-gray-400">$${item.precio.toFixed(2)} x ${item.cant} = <span class="text-gold font-bold">$${subtotalUSD.toFixed(2)}</span> (Bs. ${subtotalBs})</p>
             </div>
-            <div class="flex items-center justify-end w-full sm:w-auto space-x-2 pt-2 sm:pt-0 border-t sm:border-0 border-wood">
-              <button onclick="changeCant(${index}, -1)" class="bg-wood-card px-2.5 py-1 rounded text-gray-300 font-bold hover:text-white transition">-</button>
-              <span class="text-white font-semibold px-1">${item.cant}</span>
-              <button onclick="changeCant(${index}, 1)" class="bg-wood-card px-2.5 py-1 rounded text-gray-300 font-bold hover:text-white transition">+</button>
+            <div class="flex items-center space-x-2">
+              <button onclick="changeCant(${index}, -1)" class="bg-wood-card px-2 py-0.5 rounded text-gray-300 font-bold">-</button>
+              <span class="text-white font-semibold">${item.cant}</span>
+              <button onclick="changeCant(${index}, 1)" class="bg-wood-card px-2 py-0.5 rounded text-gray-300 font-bold">+</button>
             </div>
           </div>
         `;
@@ -573,8 +569,8 @@
         totalOrden: `Bs. ${montoIngresado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ($${totalUSD.toFixed(2)})`,
         productos: carrito.map(i => `${i.cant}x ${i.nombre}`).join(', ')
       };
-      if (!orden.cliente || !orden.cedula || !orden.banco || !orden.referencia || !orden.monto || !orden.direccion) {
-        return Swal.fire({ icon: 'info', title: 'Completa todos los datos del formulario (incluyendo la dirección de entrega)', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      if (!orden.cliente || !orden.cedula || !orden.banco || !orden.referencia || !orden.monto) {
+        return Swal.fire({ icon: 'info', title: 'Completa todos los datos del formulario', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
       const btn = document.getElementById('btn-completar');
       btn.innerText = "Registrando Orden...";
@@ -592,22 +588,14 @@
                              `*Cliente:* ${orden.cliente}%0A` +
                              `*Cédula:* ${orden.cedula}%0A` +
                              `*Teléfono:* ${orden.telefono}%0A` +
-                             `*Dirección / Delivery:* ${orden.direccion}%0A` +
+                             `*Dirección:* ${orden.direccion}%0A` +
                              `*Total Pagado:* ${orden.totalOrden}%0A` +
                              `*Productos:* ${orden.productos}%0A` +
                              `*Banco:* ${orden.banco}%0A` +
                              `*Referencia:* ${orden.referencia}`;
         window.open(`https://wa.me/${telefonoAdmin}?text=${mensajeAdmin}`, '_blank');
-        Swal.fire({ icon: 'success', title: '¡Orden Registrada!', text: `N°: ${res.idPedido}.`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
-        
+        Swal.fire({ icon: 'success', title: '¡Orden Registrada!', text: `N°: ${res.idPedido}. Pago por Bs. ${montoIngresado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} verificado.`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
         carrito = [];
-        document.getElementById('cli-nombre').value = '';
-        document.getElementById('cli-cedula').value = '';
-        document.getElementById('cli-telefono').value = '';
-        document.getElementById('cli-direccion').value = '';
-        document.getElementById('pago-banco').value = '';
-        document.getElementById('pago-referencia').value = '';
-        document.getElementById('pago-monto-bs').value = '';
         updateCartUI();
         toggleCartDrawer();
         cargarDatosIniciales();
@@ -648,6 +636,7 @@
       tbody.innerHTML = pedidos.map(o => {
         const isConfirmado = o.status === 'Confirmado';
         const badgeColor = isConfirmado ? 'bg-green-600/30 text-green-400 border-green-600' : 'bg-yellow-600/30 text-yellow-400 border-yellow-600';
+        
         const montoLimpio = parseFloat(String(o.monto).replace(/[^\d.-]/g, ''));
         const montoFormateado = !isNaN(montoLimpio) ? 'Bs. ' + montoLimpio.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : o.monto;
         const fechaFormateada = formatearFechaDDMMYYYY(o.fecha);
