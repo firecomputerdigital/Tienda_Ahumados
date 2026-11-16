@@ -20,26 +20,24 @@
 <body class="bg-wood text-smoke min-h-screen font-sans flex flex-col justify-between">
   <!-- NAVBAR -->
   <header class="bg-black/60 backdrop-blur border-b border-wood sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
-      <div class="flex items-center space-x-2 cursor-pointer shrink-0" onclick="switchTab('store')">
-        <i class="fa-solid fa-fire-burner text-gold text-xl sm:text-2xl"></i>
-        <span class="font-bold text-base sm:text-xl text-white tracking-wider">
-          AHUMADOS <span class="text-gold hidden sm:inline">EXPRESS</span><span class="text-gold inline sm:hidden">EXP</span>
-        </span>
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('store')">
+        <i class="fa-solid fa-fire-burner text-gold text-2xl"></i>
+        <span class="font-bold text-xl text-white tracking-wider">AHUMADOS <span class="text-gold">EXPRESS</span></span>
       </div>
-      <div class="flex items-center space-x-1.5 sm:space-x-3">
-        <div id="tasa-bcv-badge" class="hidden md:flex items-center bg-wood border border-wood px-2 py-1 rounded-lg text-xs text-gold font-bold">
-          <i class="fa-solid fa-chart-line mr-1"></i> Tasa Bs: <span id="tasa-valor">...</span> <span class="text-gray-400 font-normal ml-1" id="tasa-fecha"></span>
+      <div class="flex items-center space-x-4">
+        <div id="tasa-bcv-badge" class="hidden md:flex items-center bg-wood border border-wood px-3 py-1 rounded-lg text-xs text-gold font-bold">
+          <i class="fa-solid fa-chart-line mr-1"></i> Tasa BCV: Bs. <span id="tasa-valor">...</span> <span class="text-gray-400 font-normal ml-1" id="tasa-fecha"></span>
         </div>
-        <button onclick="switchTab('store')" class="text-xs sm:text-sm font-medium hover:text-gold px-2 py-1.5 rounded-lg transition flex items-center">
-          <i class="fa-solid fa-store mr-1"></i> <span class="hidden sm:inline">Catálogo</span>
+        <button onclick="switchTab('store')" class="text-sm font-medium hover:text-gold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-store mr-1"></i> Catálogo
         </button>
-        <button onclick="switchTab('admin')" class="text-xs sm:text-sm font-medium hover:text-gold px-2 py-1.5 rounded-lg transition flex items-center">
-          <i class="fa-solid fa-user-gear mr-1"></i> <span class="hidden sm:inline">Admin</span>
+        <button onclick="switchTab('admin')" class="text-sm font-medium hover:text-gold px-3 py-2 rounded-lg transition">
+          <i class="fa-solid fa-user-gear mr-1"></i> Panel Admin
         </button>
-        <button onclick="toggleCartDrawer()" class="relative bg-gold text-black px-3 py-1.5 rounded-lg font-semibold hover-bg-gold transition text-xs sm:text-sm flex items-center">
+        <button onclick="toggleCartDrawer()" class="relative bg-gold text-black px-4 py-2 rounded-lg font-semibold hover-bg-gold transition">
           <i class="fa-solid fa-cart-shopping"></i>
-          <span id="cart-count" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold">0</span>
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
         </button>
       </div>
     </div>
@@ -75,6 +73,7 @@
         <i class="fa-solid fa-lock text-4xl text-gold"></i>
         <h2 class="text-xl font-bold text-white">Acceso Administrativo</h2>
         <p class="text-xs text-gray-400">Introduce la contraseña para gestionar la tienda</p>
+        
         <div class="relative">
           <input type="password" id="admin-pass" placeholder="Contraseña de admin" class="w-full bg-wood border border-wood rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:border-gold" onkeydown="if(event.key==='Enter') loginAdmin()">
           <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-gray-400 hover:text-white">
@@ -88,28 +87,27 @@
       <!-- DASHBOARD ADMIN -->
       <div id="admin-dashboard" class="hidden space-y-6">
         
-        <!-- CONTROL DE TASA BCV (Responsivo adaptado para móvil) -->
-        <div class="bg-wood-card p-4 rounded-xl border border-wood flex flex-col gap-3">
+        <!-- CONTROL DE TASA BCV -->
+        <div class="bg-wood-card p-4 rounded-xl border border-wood flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h3 class="font-bold text-white text-base"><i class="fa-solid fa-coins text-gold mr-2"></i>Actualizar Tasa BCV Diaria</h3>
             <p class="text-xs text-gray-400">Modifica la cotización oficial del dólar y su fecha en formato dd/mm/aaaa.</p>
           </div>
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
-            <input type="number" step="0.01" id="admin-nueva-tasa" placeholder="Ej. 36.50" class="bg-wood border border-wood rounded px-3 py-2 text-sm text-white w-full sm:w-32 focus:border-gold">
-            <input type="text" id="admin-fecha-tasa" placeholder="dd/mm/aaaa" class="bg-wood border border-wood rounded px-3 py-2 text-sm text-white w-full sm:w-32 focus:border-gold">
-            <button onclick="actualizarTasaAdmin()" class="bg-gold text-black font-bold px-4 py-2 rounded text-sm hover-bg-gold transition text-center">Guardar Tasa</button>
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <input type="number" step="0.01" id="admin-nueva-tasa" placeholder="Ej. 36.50" class="bg-wood border border-wood rounded px-3 py-1.5 text-sm text-white w-32 focus:border-gold">
+            <input type="text" id="admin-fecha-tasa" placeholder="dd/mm/aaaa" class="bg-wood border border-wood rounded px-3 py-1.5 text-sm text-white w-32 focus:border-gold">
+            <button onclick="actualizarTasaAdmin()" class="bg-gold text-black font-bold px-4 py-1.5 rounded text-sm hover-bg-gold transition">Guardar Tasa</button>
           </div>
         </div>
-        <!-- CABECERA PRODUCTOS (Responsiva) -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-wood pb-4">
-          <h2 class="text-xl sm:text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-gold mr-2"></i>Mantenimiento de Productos</h2>
-          <button onclick="openProductModal()" class="w-full sm:w-auto bg-gold text-black font-bold px-4 py-2 rounded-lg hover-bg-gold transition text-sm text-center">
+        <div class="flex justify-between items-center border-b border-wood pb-4">
+          <h2 class="text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-gold mr-2"></i>Mantenimiento de Productos</h2>
+          <button onclick="openProductModal()" class="bg-gold text-black font-bold px-4 py-2 rounded-lg hover-bg-gold transition text-sm">
             <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
           </button>
         </div>
         <!-- TABLA DE PRODUCTOS -->
         <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-300 min-w-[500px]">
+          <table class="w-full text-left text-sm text-gray-300">
             <thead class="bg-black/40 text-gold uppercase text-xs">
               <tr>
                 <th class="p-3">Imagen</th>
@@ -125,7 +123,7 @@
         <!-- TABLA DE PEDIDOS -->
         <h2 class="text-xl font-bold text-white pt-6 border-b border-wood pb-2"><i class="fa-solid fa-receipt text-gold mr-2"></i>Historial de Pedidos</h2>
         <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-300 min-w-[700px]">
+          <table class="w-full text-left text-sm text-gray-300">
             <thead class="bg-black/40 text-gold uppercase text-xs">
               <tr>
                 <th class="p-3">Fecha</th>
@@ -220,7 +218,7 @@
           <input type="text" id="cli-cedula" placeholder="Cédula / RIF *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
           <input type="tel" id="cli-telefono" placeholder="Teléfono WhatsApp *" required class="w-full bg-wood border border-wood rounded p-2 text-white">
         </div>
-        <textarea id="cli-direccion" placeholder="Dirección de Entrega / Delivery *" rows="2" class="w-full bg-wood border border-wood rounded p-2 text-white"></textarea>
+        <textarea id="cli-direccion" placeholder="Dirección de Entrega *" rows="2" class="w-full bg-wood border border-wood rounded p-2 text-white"></textarea>
         
         <div class="border-t border-wood pt-2 space-y-2">
           <span class="font-bold text-gold block">Detalles de Pago Móvil (Obligatorio en Bs):</span>
@@ -258,16 +256,18 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbx9LDyr-ioAjpw_fs2h_3A7X3AYFTSvUPZwXdyz03vfvqbIq__L8bITUx6CDCiSg4hQbQ/exec";
     let productos = [];
     let carrito = [];
-    let pedidosGlobal = [];
+    let pedidosGlobal = []; // <--- Declarado globalmente para evitar ReferenceError
     let tasaBCV = 36.50; 
     let fechaBCV = "";
     let currentImageBase64 = null;
     let currentCategory = 'todos';
     const ADMIN_PASS = "admin123";
+
     window.onload = () => {
       switchTab('store');
       cargarDatosIniciales();
     };
+
     function formatearFechaDDMMYYYY(fechaInput) {
       if (!fechaInput) return "N/A";
       let d = new Date(fechaInput);
@@ -277,6 +277,7 @@
       let anio = d.getFullYear();
       return `${dia}/${mes}/${anio}`;
     }
+
     function switchTab(tab) {
       document.getElementById('tab-store').classList.add('hidden');
       document.getElementById('tab-admin').classList.add('hidden');
@@ -286,11 +287,13 @@
         cargarDatosIniciales();
       }
     }
+
     function cerrarSesionAdmin() {
       document.getElementById('admin-dashboard').classList.add('hidden');
       document.getElementById('admin-login-card').classList.remove('hidden');
       document.getElementById('admin-pass').value = '';
     }
+
     function togglePasswordVisibility() {
       const passInput = document.getElementById('admin-pass');
       const eyeIcon = document.getElementById('toggle-eye-icon');
@@ -302,6 +305,7 @@
         eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
       }
     }
+
     function loginAdmin() {
       const pass = document.getElementById('admin-pass').value;
       if (pass === ADMIN_PASS) {
@@ -321,52 +325,75 @@
         });
       }
     }
-    async function cargarDatosIniciales() {
-      try {
-        // Añadimos un timestamp (&t=...) para evitar que el navegador use datos viejos en caché
-        const timestamp = new Date().getTime();
 
-        const resTasa = await fetch(`${API_URL}?action=getTasaBCV&t=${timestamp}`).then(r => r.json());
+    async function cargarDatosIniciales() {
+      const timestamp = new Date().getTime();
+      try {
+        const [resTasa, resProds] = await Promise.all([
+          fetch(`${API_URL}?action=getTasaBCV&t=${timestamp}`).then(r => r.json()),
+          fetch(`${API_URL}?action=getProductos&t=${timestamp}`).then(r => r.json())
+        ]);
         tasaBCV = parseFloat(resTasa.tasa) || 36.50;
         fechaBCV = formatearFechaDDMMYYYY(resTasa.fecha);
         document.getElementById('tasa-valor').innerText = tasaBCV.toFixed(2);
         document.getElementById('tasa-fecha').innerText = fechaBCV ? `(${fechaBCV})` : "";
-
-        const resProds = await fetch(`${API_URL}?action=getProductos&t=${timestamp}`).then(r => r.json());
         productos = Array.isArray(resProds) ? resProds : [];
         filterProducts();
-
-        // Si el panel de administración está visible, cargamos productos y pedidos
         if (!document.getElementById('admin-dashboard').classList.contains('hidden')) {
           renderAdminTables();
-          
-          const tbodyPedidos = document.getElementById('admin-orders-table');
-          tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gold"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando historial de pedidos...</td></tr>`;
-
-          const resPedidos = await fetch(`${API_URL}?action=getPedidos&t=${timestamp}`).then(r => r.json());
-          
-          if (Array.isArray(resPedidos)) {
-            pedidosGlobal = resPedidos;
-            renderOrdersTable(pedidosGlobal);
-          } else if (resPedidos && resPedidos.error) {
-            tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">Error del servidor: ${resPedidos.error}</td></tr>`;
-          } else {
-            pedidosGlobal = [];
-            renderOrdersTable([]);
-          }
+          await cargarSoloPedidos();
         }
       } catch (e) {
         console.error("Error al conectar con la API:", e);
         filterProducts();
-        const tbodyPedidos = document.getElementById('admin-orders-table');
-        if (tbodyPedidos) {
-          tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">No se pudo conectar con Google Sheets para leer los pedidos. Verifica tu conexión.</td></tr>`;
-        }
       }
     }
+
+    async function cargarSoloPedidos() {
+      const tbodyPedidos = document.getElementById('admin-orders-table');
+      tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gold"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando historial de pedidos...</td></tr>`;
+      
+      try {
+        const timestamp = new Date().getTime();
+        const resPedidos = await fetch(`${API_URL}?action=getPedidos&t=${timestamp}`).then(r => r.json());
+        
+        if (Array.isArray(resPedidos)) {
+          pedidosGlobal = resPedidos;
+          renderOrdersTable(pedidosGlobal);
+        } else if (resPedidos && resPedidos.error) {
+          tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">${resPedidos.error}</td></tr>`;
+        } else {
+          pedidosGlobal = [];
+          renderOrdersTable([]);
+        }
+      } catch (err) {
+        tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">Error de red al leer pedidos: ${err.message}</td></tr>`;
+      }
+    }
+
+    function formatearTelefonoWhatsApp(tlf) {
+      if (!tlf) return '';
+      let limpio = String(tlf).replace(/\D/g, '');
+      if (limpio.startsWith('0')) {
+        limpio = '58' + limpio.substring(1);
+      } else if (limpio.length === 10 && limpio.startsWith('4')) {
+        limpio = '58' + limpio;
+      }
+      return limpio;
+    }
+
+    function construirMensajeCliente(o) {
+      const texto = `¡Hola ${o.cliente}! 🎉 Tu pago y pedido N° *${o.idPedido}* han sido *CONFIRMADOS* exitosamente.\n` +
+                    `*Su pedido está en Proceso.* 📦🔥\n` +
+                    `Dirección registrada: ${o.direccion || 'Entrega acordada'}.\n` +
+                    `Te avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
+      return encodeURIComponent(texto);
+    }
+
     async function actualizarTasaAdmin() {
       let nuevaTasa = document.getElementById('admin-nueva-tasa').value;
       let nuevaFecha = document.getElementById('admin-fecha-tasa').value;
+      
       if (!nuevaTasa || !nuevaFecha) {
         return Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Introduce la tasa y la fecha.', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
@@ -381,10 +408,12 @@
         Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
     }
+
     function normalizarTexto(txt) {
       if (!txt) return '';
       return txt.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
+
     function filterCategory(cat, btnElement) {
       currentCategory = cat;
       const buttons = document.querySelectorAll('.cat-btn');
@@ -398,6 +427,7 @@
       }
       filterProducts();
     }
+
     function filterProducts() {
       const inputElem = document.getElementById('search-input');
       const query = normalizarTexto(inputElem ? inputElem.value : '');
@@ -411,6 +441,7 @@
       });
       renderProducts(filtrados);
     }
+
     function renderProducts(lista) {
       const grid = document.getElementById('products-grid');
       if (!lista || lista.length === 0) {
@@ -445,9 +476,11 @@
         `;
       }).join('');
     }
+
     function toggleCartDrawer() {
       document.getElementById('cart-drawer').classList.toggle('translate-x-full');
     }
+
     function addToCart(id) {
       const prod = productos.find(p => p.id.toString() === id.toString());
       if (!prod) return;
@@ -460,6 +493,7 @@
         showConfirmButton: false, timer: 1500, background: '#27221f', color: '#ffffff'
       });
     }
+
     function updateCartUI() {
       const totalCount = carrito.reduce((acc, item) => acc + item.cant, 0);
       document.getElementById('cart-count').innerText = totalCount;
@@ -476,16 +510,15 @@
         const subtotalBs = (subtotalUSD * tasaBCV).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         totalUSD += subtotalUSD;
         return `
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-wood p-3 rounded-lg border border-wood gap-2 text-xs">
-            <div class="w-full sm:w-auto flex-grow pr-1">
-              <p class="font-bold text-white text-sm break-words">${item.nombre}</p>
-              <p class="text-gray-400">$${item.precio.toFixed(2)} c/u</p>
-              <p class="text-gold font-bold mt-0.5">Subtotal: $${subtotalUSD.toFixed(2)} <span class="text-gray-300 font-normal">(Bs. ${subtotalBs})</span></p>
+          <div class="flex justify-between items-center bg-wood p-2.5 rounded border border-wood text-xs">
+            <div class="flex-grow pr-2">
+              <p class="font-bold text-white">${item.nombre}</p>
+              <p class="text-gray-400">$${item.precio.toFixed(2)} x ${item.cant} = <span class="text-gold font-bold">$${subtotalUSD.toFixed(2)}</span> (Bs. ${subtotalBs})</p>
             </div>
-            <div class="flex items-center justify-end w-full sm:w-auto space-x-2 pt-2 sm:pt-0 border-t sm:border-0 border-wood">
-              <button onclick="changeCant(${index}, -1)" class="bg-wood-card px-2.5 py-1 rounded text-gray-300 font-bold hover:text-white transition">-</button>
-              <span class="text-white font-semibold px-1">${item.cant}</span>
-              <button onclick="changeCant(${index}, 1)" class="bg-wood-card px-2.5 py-1 rounded text-gray-300 font-bold hover:text-white transition">+</button>
+            <div class="flex items-center space-x-2">
+              <button onclick="changeCant(${index}, -1)" class="bg-wood-card px-2 py-0.5 rounded text-gray-300 font-bold">-</button>
+              <span class="text-white font-semibold">${item.cant}</span>
+              <button onclick="changeCant(${index}, 1)" class="bg-wood-card px-2 py-0.5 rounded text-gray-300 font-bold">+</button>
             </div>
           </div>
         `;
@@ -495,20 +528,13 @@
       document.getElementById('cart-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
       document.getElementById('cart-total-bs').innerText = `Bs. ${totalBsStr}`;
     }
+
     function changeCant(index, delta) {
       carrito[index].cant += delta;
       if (carrito[index].cant <= 0) carrito.splice(index, 1);
       updateCartUI();
     }
-    function meLimpiarFormularioCheckout() {
-      document.getElementById('cli-nombre').value = '';
-      document.getElementById('cli-cedula').value = '';
-      document.getElementById('cli-telefono').value = '';
-      document.getElementById('cli-direccion').value = '';
-      document.getElementById('pago-banco').value = '';
-      document.getElementById('pago-referencia').value = '';
-      document.getElementById('pago-monto-bs').value = '';
-    }
+
     async function procesarOrden() {
       if (carrito.length === 0) {
         return Swal.fire({ icon: 'warning', title: 'Carrito Vacío', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
@@ -536,8 +562,8 @@
         totalOrden: `Bs. ${montoIngresado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ($${totalUSD.toFixed(2)})`,
         productos: carrito.map(i => `${i.cant}x ${i.nombre}`).join(', ')
       };
-      if (!orden.cliente || !orden.cedula || !orden.banco || !orden.referencia || !orden.monto || !orden.direccion) {
-        return Swal.fire({ icon: 'info', title: 'Completa todos los datos del formulario (incluyendo la dirección de entrega)', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
+      if (!orden.cliente || !orden.cedula || !orden.banco || !orden.referencia || !orden.monto) {
+        return Swal.fire({ icon: 'info', title: 'Completa todos los datos del formulario', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
       const btn = document.getElementById('btn-completar');
       btn.innerText = "Registrando Orden...";
@@ -555,17 +581,14 @@
                              `*Cliente:* ${orden.cliente}%0A` +
                              `*Cédula:* ${orden.cedula}%0A` +
                              `*Teléfono:* ${orden.telefono}%0A` +
-                             `*Dirección / Delivery:* ${orden.direccion}%0A` +
+                             `*Dirección:* ${orden.direccion}%0A` +
                              `*Total Pagado:* ${orden.totalOrden}%0A` +
                              `*Productos:* ${orden.productos}%0A` +
                              `*Banco:* ${orden.banco}%0A` +
                              `*Referencia:* ${orden.referencia}`;
-        
         window.open(`https://wa.me/${telefonoAdmin}?text=${mensajeAdmin}`, '_blank');
-        Swal.fire({ icon: 'success', title: '¡Orden Registrada!', text: `N°: ${res.idPedido}.`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
-        
+        Swal.fire({ icon: 'success', title: '¡Orden Registrada!', text: `N°: ${res.idPedido}. Pago por Bs. ${montoIngresado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} verificado.`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
         carrito = [];
-        meLimpiarFormularioCheckout();
         updateCartUI();
         toggleCartDrawer();
         cargarDatosIniciales();
@@ -573,6 +596,7 @@
         Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
     }
+
     function renderAdminTables() {
       const tbody = document.getElementById('admin-products-table');
       if (!productos || productos.length === 0) {
@@ -595,6 +619,7 @@
         `;
       }).join('');
     }
+
     function renderOrdersTable(pedidos) {
       const tbody = document.getElementById('admin-orders-table');
       if (!pedidos || pedidos.length === 0) {
@@ -604,11 +629,13 @@
       tbody.innerHTML = pedidos.map(o => {
         const isConfirmado = o.status === 'Confirmado';
         const badgeColor = isConfirmado ? 'bg-green-600/30 text-green-400 border-green-600' : 'bg-yellow-600/30 text-yellow-400 border-yellow-600';
-        const montoFormateado = !isNaN(o.monto) ? 'Bs. ' + parseFloat(o.monto).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : o.monto;
+        
+        const montoLimpio = parseFloat(String(o.monto).replace(/[^\d.-]/g, ''));
+        const montoFormateado = !isNaN(montoLimpio) ? 'Bs. ' + montoLimpio.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : o.monto;
         const fechaFormateada = formatearFechaDDMMYYYY(o.fecha);
         
-        let tlfLimpieza = o.telefono ? o.telefono.replace(/\D/g, '') : '';
-        let mensajeWpCliente = `¡Hola ${o.cliente}! 🎉 Tu pago y pedido N° *${o.idPedido}* han sido *CONFIRMADOS* exitosamente.%0A*Su pedido está en Proceso.* 📦🔥%0ADirección registrada: ${o.direccion || 'Entrega acordada'}.%0ATe avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
+        const tlfWhatsapp = formatearTelefonoWhatsApp(o.telefono);
+        const mensajeEncoded = construirMensajeCliente(o);
 
         return `
           <tr>
@@ -621,11 +648,9 @@
             <td class="p-3 space-y-2">
               <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${badgeColor} inline-block">${o.status}</span>
               
-              <!-- BOTÓN DE CONFIRMAR PAGO QUE CAMBIA EL ESTATUS Y ABRE EL WHATSAPP DEL CLIENTE AUTOMÁTICAMENTE -->
-              <button onclick="cambiarStatus('${o.idPedido}', 'Confirmado', '${tlfLimpieza}', '${encodeURIComponent(mensajeWpCliente)}')" class="block text-xs bg-gold text-black font-bold px-2.5 py-1 rounded hover-bg-gold transition text-center w-full">Confirmar Pago</button>
+              ${!isConfirmado ? `<button onclick="cambiarStatus('${o.idPedido}', 'Confirmado')" class="block text-xs bg-gold text-black font-bold px-2.5 py-1 rounded hover-bg-gold transition text-center w-full">Confirmar Pago</button>` : ''}
               
-              <!-- BOTÓN MANUAL DE WHATSAPP AL CLIENTE POR SI SE REQUIERE -->
-              ${tlfLimpieza ? `<a href="https://wa.me/${tlfLimpieza}?text=${mensajeWpCliente}" target="_blank" class="block text-xs bg-green-600 text-white font-bold px-2.5 py-1 rounded hover:bg-green-700 transition text-center"><i class="fa-brands fa-whatsapp mr-1"></i> Avisar Cliente</a>` : ''}
+              ${tlfWhatsapp ? `<a href="https://wa.me/${tlfWhatsapp}?text=${mensajeEncoded}" target="_blank" class="block text-xs bg-green-600 text-white font-bold px-2.5 py-1 rounded hover:bg-green-700 transition text-center"><i class="fa-brands fa-whatsapp mr-1"></i> Avisar Cliente</a>` : ''}
 
               <button onclick="deleteOrder('${o.idPedido}')" class="block text-xs bg-red-600/80 text-white font-bold px-2.5 py-1 rounded hover:bg-red-700 transition text-center w-full" title="Eliminar Pedido"><i class="fa-solid fa-trash mr-1"></i> Borrar</button>
             </td>
@@ -633,33 +658,41 @@
         `;
       }).join('');
     }
-    
-    async function cambiarStatus(idPedido, nuevoStatus, telefonoCliente, mensajeEncoded) {
+
+    async function cambiarStatus(idPedido, nuevoStatus) {
+      const pedidoActual = pedidosGlobal.find(o => String(o.idPedido).trim() === String(idPedido).trim());
+      let urlWhatsapp = null;
+      if (nuevoStatus === 'Confirmado' && pedidoActual) {
+        const tlfWhatsapp = formatearTelefonoWhatsApp(pedidoActual.telefono);
+        if (tlfWhatsapp) {
+          urlWhatsapp = `https://wa.me/${tlfWhatsapp}?text=${construirMensajeCliente(pedidoActual)}`;
+        }
+      }
+
       Swal.fire({
         toast: true, position: 'top-end', icon: 'info',
-        title: `Actualizando pedido ${idPedido}...`, showConfirmButton: false, timer: 1000,
+        title: `Actualizando pedido ${idPedido}...`, showConfirmButton: false, timer: 1500,
         background: '#27221f', color: '#ffffff'
       });
+
       const res = await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "actualizarStatusPedido", idPedido: idPedido, nuevoStatus: nuevoStatus })
       }).then(r => r.json());
+
       if (res.success) {
+        if (pedidoActual) pedidoActual.status = nuevoStatus;
+        renderOrdersTable(pedidosGlobal);
+
         Swal.fire({
           toast: true, position: 'top-end', icon: 'success',
           title: `¡Pedido ${idPedido} ${nuevoStatus}!`, showConfirmButton: false, timer: 1500,
           background: '#27221f', color: '#ffffff'
         });
-        
-        // DISPARAR EL WHATSAPP DIRECTAMENTE AL CLIENTE AL MOMENTO DE CLIC
-        if (nuevoStatus === 'Confirmado' && telefonoCliente) {
-          setTimeout(() => {
-            window.open(`https://wa.me/${telefonoCliente}?text=${mensajeEncoded}`, '_blank');
-          }, 300);
-        }
 
-        // Recarga inmediata de los datos en la tabla
-        await cargarDatosIniciales();
+        if (urlWhatsapp) {
+          window.open(urlWhatsapp, '_blank');
+        }
       } else {
         Swal.fire({ 
           icon: 'error', 
@@ -669,6 +702,7 @@
         });
       }
     }
+
     function deleteOrder(idPedido) {
       Swal.fire({
         title: '¿Eliminar Pedido?', text: `Se borrará permanentemente la orden ${idPedido}.`,
@@ -689,6 +723,7 @@
         }
       });
     }
+
     function openProductModal() {
       document.getElementById('product-form').reset();
       document.getElementById('prod-id').value = '';
@@ -697,9 +732,11 @@
       currentImageBase64 = null;
       document.getElementById('product-modal').classList.remove('hidden');
     }
+
     function closeProductModal() {
       document.getElementById('product-modal').classList.add('hidden');
     }
+
     function editProduct(id) {
       const prod = productos.find(p => p.id.toString() === id.toString());
       if (!prod) return;
@@ -719,6 +756,7 @@
       document.getElementById('modal-title').innerText = "Editar Producto";
       document.getElementById('product-modal').classList.remove('hidden');
     }
+
     function deleteProduct(id) {
       Swal.fire({
         title: '¿Estás seguro?', text: "Se eliminará permanentemente de la hoja.",
@@ -739,6 +777,7 @@
         }
       });
     }
+
     function previewFileImage(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -750,6 +789,7 @@
         reader.readAsDataURL(input.files[0]);
       }
     }
+
     async function saveProduct(e) {
       e.preventDefault();
       const prod = {
