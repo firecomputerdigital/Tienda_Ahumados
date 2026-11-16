@@ -658,9 +658,12 @@
           
           if (pedidoActual && pedidoActual.telefono) {
             let tlfCliente = pedidoActual.telefono.replace(/\D/g, '');
+            
+            // MENSAJE ACTUALIZADO PARA EL CLIENTE
             const mensajeCliente = `¡Hola ${pedidoActual.cliente}! 🎉 Tu pago y pedido N° *${idPedido}* han sido *CONFIRMADOS* exitosamente.%0A` +
-                                 `Dirección registrada: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
-                                 `Estamos preparando tus ahumados artesanales para despacho/delivery. ¡Gracias por tu compra! 🥩🔥`;
+                                 `*Su pedido está en Proceso.* 📦🔥%0A` +
+                                 `Dirección de entrega: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
+                                 `Te avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
             
             window.open(`https://wa.me/${tlfCliente}?text=${mensajeCliente}`, '_blank');
           } else {
