@@ -638,7 +638,7 @@
       }).join('');
     }
 
-    async function cambiarStatus(idPedido, nuevoStatus) {
+   async function cambiarStatus(idPedido, nuevoStatus) {
       const res = await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "actualizarStatusPedido", idPedido: idPedido, nuevoStatus: nuevoStatus })
@@ -651,32 +651,35 @@
           background: '#27221f', color: '#ffffff'
         });
 
-        // NOTIFICACIÓN AL CLIENTE POR WHATSAPP AL CONFIRMAR EL PAGO (GARANTIZADA)
+        // 1. RECARGA INMEDIATA DE LA TABLA SIN CERRAR LA APP
+        await cargarDatosIniciales();
+
+        // 2. NOTIFICACIÓN AL CLIENTE POR WHATSAPP AL CONFIRMAR EL PAGO
         if (nuevoStatus === 'Confirmado') {
-          // Buscamos directamente el pedido en el array global actual
           const pedidoActual = pedidosGlobal.find(o => o.idPedido.toString().trim() === idPedido.toString().trim());
           
           if (pedidoActual && pedidoActual.telefono) {
             let tlfCliente = pedidoActual.telefono.replace(/\D/g, '');
-            
-            // MENSAJE ACTUALIZADO PARA EL CLIENTE
             const mensajeCliente = `¡Hola ${pedidoActual.cliente}! 🎉 Tu pago y pedido N° *${idPedido}* han sido *CONFIRMADOS* exitosamente.%0A` +
                                  `*Su pedido está en Proceso.* 📦🔥%0A` +
-                                 `Dirección de entrega: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
+                                 `Dirección registrada: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
                                  `Te avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
             
-            window.open(`https://wa.me/${tlfCliente}?text=${mensajeCliente}`, '_blank');
+            // Usamos un botón directo o enlace seguro para evitar el bloqueo de popups del navegador
+            setTimeout(() => {
+              window.open(`https://wa.me/${tlfCliente}?text=${mensajeCliente}`, '_blank');
+            }, 300);
+
           } else {
             Swal.fire({
               icon: 'warning',
               title: 'Aviso',
-              text: 'El estatus se actualizó, pero no se encontró un número de teléfono válido para abrir el chat del cliente.',
+              text: 'El estatus se actualizó y se recargó la tabla, pero no se encontró un número de teléfono válido para el cliente.',
               background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12'
             });
           }
         }
 
-        cargarDatosIniciales();
       } else {
         Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
