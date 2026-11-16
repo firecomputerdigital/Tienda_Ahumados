@@ -620,6 +620,11 @@
         const badgeColor = isConfirmado ? 'bg-green-600/30 text-green-400 border-green-600' : 'bg-yellow-600/30 text-yellow-400 border-yellow-600';
         const montoFormateado = !isNaN(o.monto) ? 'Bs. ' + parseFloat(o.monto).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : o.monto;
         const fechaFormateada = formatearFechaDDMMYYYY(o.fecha);
+        
+        // Limpiamos el teléfono del cliente para el botón directo de WhatsApp
+        let tlfLimpieza = o.telefono ? o.telefono.replace(/\D/g, '') : '';
+        let mensajeWpCliente = `¡Hola ${o.cliente}! 🎉 Tu pago y pedido N° *${o.idPedido}* han sido *CONFIRMADOS* exitosamente.%0A*Su pedido está en Proceso.* 📦🔥%0ADirección registrada: ${o.direccion || 'Entrega acordada'}.%0ATe avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
+
         return `
           <tr>
             <td class="p-3 text-xs text-gray-400 whitespace-nowrap">${fechaFormateada}</td>
@@ -630,23 +635,26 @@
             <td class="p-3 text-xs text-gray-300">${o.productos}</td>
             <td class="p-3 space-y-2">
               <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${badgeColor} inline-block">${o.status}</span>
-              ${!isConfirmado ? `<button onclick="cambiarStatus('${o.idPedido}', 'Confirmado')" class="block text-xs bg-gold text-black font-bold px-2 py-0.5 rounded hover-bg-gold transition">Confirmar Pago</button>` : ''}
-              <button onclick="deleteOrder('${o.idPedido}')" class="block text-xs bg-red-600/80 text-white font-bold px-2 py-0.5 rounded hover:bg-red-700 transition" title="Eliminar Pedido"><i class="fa-solid fa-trash mr-1"></i> Borrar</button>
+              
+              ${!isConfirmado ? `<button onclick="cambiarStatus('${o.idPedido}', 'Confirmado')" class="block text-xs bg-gold text-black font-bold px-2.5 py-1 rounded hover-bg-gold transition text-center w-full">Confirmar Pago</button>` : ''}
+              
+              <!-- BOTÓN DIRECTO DE WHATSAPP AL CLIENTE -->
+              ${tlfLimpieza ? `<a href="https://wa.me/${tlfLimpieza}?text=${mensajeWpCliente}" target="_blank" class="block text-xs bg-green-600 text-white font-bold px-2.5 py-1 rounded hover:bg-green-700 transition text-center"><i class="fa-brands fa-whatsapp mr-1"></i> Avisar Cliente</a>` : ''}
+
+              <button onclick="deleteOrder('${o.idPedido}')" class="block text-xs bg-red-600/80 text-white font-bold px-2.5 py-1 rounded hover:bg-red-700 transition text-center w-full" title="Eliminar Pedido"><i class="fa-solid fa-trash mr-1"></i> Borrar</button>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-   async function cambiarStatus(idPedido, nuevoStatus) {
-      // 1. Mostrar un indicador visual rápido de que se está procesando
+    async function cambiarStatus(idPedido, nuevoStatus) {
       Swal.fire({
         toast: true, position: 'top-end', icon: 'info',
         title: `Actualizando pedido ${idPedido}...`, showConfirmButton: false, timer: 1000,
         background: '#27221f', color: '#ffffff'
       });
 
-      // 2. Enviar la petición POST al Apps Script para cambiar el estatus en la Hoja de Google
       const res = await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "actualizarStatusPedido", idPedido: idPedido, nuevoStatus: nuevoStatus })
@@ -659,33 +667,8 @@
           background: '#27221f', color: '#ffffff'
         });
 
-        // 3. Forzar la recarga inmediata de los datos desde Google Sheets y redibujar la tabla
+        // Recarga inmediata de los datos en la tabla
         await cargarDatosIniciales();
-
-        // 4. Si el estatus es Confirmado, abrir de forma automática el WhatsApp del cliente
-        if (nuevoStatus === 'Confirmado') {
-          // Buscamos el pedido en el array global actualizado
-          const pedidoActual = pedidosGlobal.find(o => o.idPedido.toString().trim() === idPedido.toString().trim());
-          
-          if (pedidoActual && pedidoActual.telefono) {
-            // Limpiamos cualquier carácter extraño del teléfono (letras, espacios, guiones)
-            let tlfCliente = pedidoActual.telefono.replace(/\D/g, '');
-            
-            const mensajeCliente = `¡Hola ${pedidoActual.cliente}! 🎉 Tu pago y pedido N° *${idPedido}* han sido *CONFIRMADOS* exitosamente.%0A` +
-                                 `*Su pedido está en Proceso.* 📦🔥%0A` +
-                                 `Dirección registrada: ${pedidoActual.direccion || 'Entrega acordada'}.%0A` +
-                                 `Te avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
-            
-            // Usamos un pequeño retraso para asegurar que el navegador abra la pestaña sin bloqueadores
-            setTimeout(() => {
-              window.open(`https://wa.me/${tlfCliente}?text=${mensajeCliente}`, '_blank');
-            }, 400);
-
-          } else {
-            console.warn("No se encontró el teléfono del cliente para este pedido.");
-          }
-        }
-
       } else {
         Swal.fire({ 
           icon: 'error', 
