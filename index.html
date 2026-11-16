@@ -44,7 +44,6 @@
       </div>
     </div>
   </header>
-
   <!-- CONTENIDO PRINCIPAL -->
   <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
     <!-- SECCIÓN 1: VISTA DE LA TIENDA -->
@@ -69,7 +68,6 @@
         </div>
       </div>
     </section>
-
     <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN -->
     <section id="tab-admin" class="hidden space-y-6">
       <!-- LOGIN ADMIN -->
@@ -87,7 +85,6 @@
           Ingresar al Panel
         </button>
       </div>
-
       <!-- DASHBOARD ADMIN -->
       <div id="admin-dashboard" class="hidden space-y-6">
         
@@ -103,7 +100,6 @@
             <button onclick="actualizarTasaAdmin()" class="bg-gold text-black font-bold px-4 py-2 rounded text-sm hover-bg-gold transition text-center">Guardar Tasa</button>
           </div>
         </div>
-
         <!-- CABECERA PRODUCTOS (Responsiva) -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-wood pb-4">
           <h2 class="text-xl sm:text-2xl font-bold text-white"><i class="fa-solid fa-sliders text-gold mr-2"></i>Mantenimiento de Productos</h2>
@@ -111,7 +107,6 @@
             <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
           </button>
         </div>
-
         <!-- TABLA DE PRODUCTOS -->
         <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
           <table class="w-full text-left text-sm text-gray-300 min-w-[500px]">
@@ -127,7 +122,6 @@
             <tbody id="admin-products-table" class="divide-y divide-wood"></tbody>
           </table>
         </div>
-
         <!-- TABLA DE PEDIDOS -->
         <h2 class="text-xl font-bold text-white pt-6 border-b border-wood pb-2"><i class="fa-solid fa-receipt text-gold mr-2"></i>Historial de Pedidos</h2>
         <div class="bg-wood-card rounded-xl border border-wood overflow-x-auto">
@@ -149,7 +143,6 @@
       </div>
     </section>
   </main>
-
   <!-- MODAL: CREAR/EDITAR PRODUCTO -->
   <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-wood-card border border-wood rounded-xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -203,7 +196,6 @@
       </form>
     </div>
   </div>
-
   <!-- DRAWER: CARRITO Y CHECKOUT -->
   <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-wood-card border-l border-wood shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
     <div class="p-4 border-b border-wood flex justify-between items-center bg-black/40">
@@ -262,7 +254,6 @@
       </div>
     </div>
   </div>
-
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbx9LDyr-ioAjpw_fs2h_3A7X3AYFTSvUPZwXdyz03vfvqbIq__L8bITUx6CDCiSg4hQbQ/exec";
     let productos = [];
@@ -273,12 +264,10 @@
     let currentImageBase64 = null;
     let currentCategory = 'todos';
     const ADMIN_PASS = "admin123";
-
     window.onload = () => {
       switchTab('store');
       cargarDatosIniciales();
     };
-
     function formatearFechaDDMMYYYY(fechaInput) {
       if (!fechaInput) return "N/A";
       let d = new Date(fechaInput);
@@ -288,7 +277,6 @@
       let anio = d.getFullYear();
       return `${dia}/${mes}/${anio}`;
     }
-
     function switchTab(tab) {
       document.getElementById('tab-store').classList.add('hidden');
       document.getElementById('tab-admin').classList.add('hidden');
@@ -298,13 +286,11 @@
         cargarDatosIniciales();
       }
     }
-
     function cerrarSesionAdmin() {
       document.getElementById('admin-dashboard').classList.add('hidden');
       document.getElementById('admin-login-card').classList.remove('hidden');
       document.getElementById('admin-pass').value = '';
     }
-
     function togglePasswordVisibility() {
       const passInput = document.getElementById('admin-pass');
       const eyeIcon = document.getElementById('toggle-eye-icon');
@@ -316,7 +302,6 @@
         eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
       }
     }
-
     function loginAdmin() {
       const pass = document.getElementById('admin-pass').value;
       if (pass === ADMIN_PASS) {
@@ -336,7 +321,6 @@
         });
       }
     }
-
     async function cargarDatosIniciales() {
       try {
         const resTasa = await fetch(`${API_URL}?action=getTasaBCV`).then(r => r.json());
@@ -358,7 +342,6 @@
         filterProducts();
       }
     }
-
     async function actualizarTasaAdmin() {
       let nuevaTasa = document.getElementById('admin-nueva-tasa').value;
       let nuevaFecha = document.getElementById('admin-fecha-tasa').value;
@@ -376,12 +359,10 @@
         Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
     }
-
     function normalizarTexto(txt) {
       if (!txt) return '';
       return txt.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
-
     function filterCategory(cat, btnElement) {
       currentCategory = cat;
       const buttons = document.querySelectorAll('.cat-btn');
@@ -395,7 +376,6 @@
       }
       filterProducts();
     }
-
     function filterProducts() {
       const inputElem = document.getElementById('search-input');
       const query = normalizarTexto(inputElem ? inputElem.value : '');
@@ -409,7 +389,6 @@
       });
       renderProducts(filtrados);
     }
-
     function renderProducts(lista) {
       const grid = document.getElementById('products-grid');
       if (!lista || lista.length === 0) {
@@ -444,11 +423,9 @@
         `;
       }).join('');
     }
-
     function toggleCartDrawer() {
       document.getElementById('cart-drawer').classList.toggle('translate-x-full');
     }
-
     function addToCart(id) {
       const prod = productos.find(p => p.id.toString() === id.toString());
       if (!prod) return;
@@ -461,7 +438,6 @@
         showConfirmButton: false, timer: 1500, background: '#27221f', color: '#ffffff'
       });
     }
-
     function updateCartUI() {
       const totalCount = carrito.reduce((acc, item) => acc + item.cant, 0);
       document.getElementById('cart-count').innerText = totalCount;
@@ -497,13 +473,11 @@
       document.getElementById('cart-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
       document.getElementById('cart-total-bs').innerText = `Bs. ${totalBsStr}`;
     }
-
     function changeCant(index, delta) {
       carrito[index].cant += delta;
       if (carrito[index].cant <= 0) carrito.splice(index, 1);
       updateCartUI();
     }
-
     function meLimpiarFormularioCheckout() {
       document.getElementById('cli-nombre').value = '';
       document.getElementById('cli-cedula').value = '';
@@ -513,7 +487,6 @@
       document.getElementById('pago-referencia').value = '';
       document.getElementById('pago-monto-bs').value = '';
     }
-
     async function procesarOrden() {
       if (carrito.length === 0) {
         return Swal.fire({ icon: 'warning', title: 'Carrito Vacío', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
@@ -530,7 +503,6 @@
           background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12'
         });
       }
-
       const orden = {
         cliente: document.getElementById('cli-nombre').value,
         cedula: document.getElementById('cli-cedula').value,
@@ -542,25 +514,20 @@
         totalOrden: `Bs. ${montoIngresado.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ($${totalUSD.toFixed(2)})`,
         productos: carrito.map(i => `${i.cant}x ${i.nombre}`).join(', ')
       };
-
       if (!orden.cliente || !orden.cedula || !orden.banco || !orden.referencia || !orden.monto || !orden.direccion) {
         return Swal.fire({ icon: 'info', title: 'Completa todos los datos del formulario (incluyendo la dirección de entrega)', background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
-
       const btn = document.getElementById('btn-completar');
       btn.innerText = "Registrando Orden...";
       btn.disabled = true;
-
       const res = await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "registrarPedido", pedido: orden })
       }).then(r => r.json());
-
       btn.innerText = "Confirmar y Enviar Orden";
       btn.disabled = false;
-
       if (res.success) {
-        const telefonoAdmin = "584161868824"; // <--- CAMBIA ESTE NÚMERO POR TU WHATSAPP (código país + número)
+        const telefonoAdmin = "584161868824";
         const mensajeAdmin = `¡Hola Admin! 🛒 Hay un nuevo pedido registrado.%0A%0A` +
                              `*N° Pedido:* ${res.idPedido}%0A` +
                              `*Cliente:* ${orden.cliente}%0A` +
@@ -573,7 +540,6 @@
                              `*Referencia:* ${orden.referencia}`;
         
         window.open(`https://wa.me/${telefonoAdmin}?text=${mensajeAdmin}`, '_blank');
-
         Swal.fire({ icon: 'success', title: '¡Orden Registrada!', text: `N°: ${res.idPedido}.`, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
         
         carrito = [];
@@ -585,7 +551,6 @@
         Swal.fire({ icon: 'error', title: 'Error', text: res.error, background: '#27221f', color: '#d1c7bd', confirmButtonColor: '#f39c12' });
       }
     }
-
     function renderAdminTables() {
       const tbody = document.getElementById('admin-products-table');
       if (!productos || productos.length === 0) {
@@ -608,7 +573,6 @@
         `;
       }).join('');
     }
-
     function renderOrdersTable(pedidos) {
       const tbody = document.getElementById('admin-orders-table');
       if (!pedidos || pedidos.length === 0) {
@@ -621,7 +585,6 @@
         const montoFormateado = !isNaN(o.monto) ? 'Bs. ' + parseFloat(o.monto).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : o.monto;
         const fechaFormateada = formatearFechaDDMMYYYY(o.fecha);
         
-        // Limpiamos el teléfono del cliente para el botón directo de WhatsApp
         let tlfLimpieza = o.telefono ? o.telefono.replace(/\D/g, '') : '';
         let mensajeWpCliente = `¡Hola ${o.cliente}! 🎉 Tu pago y pedido N° *${o.idPedido}* han sido *CONFIRMADOS* exitosamente.%0A*Su pedido está en Proceso.* 📦🔥%0ADirección registrada: ${o.direccion || 'Entrega acordada'}.%0ATe avisaremos cuando esté listo para despacho o delivery. ¡Gracias por tu compra!`;
 
@@ -636,9 +599,10 @@
             <td class="p-3 space-y-2">
               <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${badgeColor} inline-block">${o.status}</span>
               
-              ${!isConfirmado ? `<button onclick="cambiarStatus('${o.idPedido}', 'Confirmado')" class="block text-xs bg-gold text-black font-bold px-2.5 py-1 rounded hover-bg-gold transition text-center w-full">Confirmar Pago</button>` : ''}
+              <!-- BOTÓN DE CONFIRMAR PAGO QUE CAMBIA EL ESTATUS Y ABRE EL WHATSAPP DEL CLIENTE AUTOMÁTICAMENTE -->
+              <button onclick="cambiarStatus('${o.idPedido}', 'Confirmado', '${tlfLimpieza}', '${encodeURIComponent(mensajeWpCliente)}')" class="block text-xs bg-gold text-black font-bold px-2.5 py-1 rounded hover-bg-gold transition text-center w-full">Confirmar Pago</button>
               
-              <!-- BOTÓN DIRECTO DE WHATSAPP AL CLIENTE -->
+              <!-- BOTÓN MANUAL DE WHATSAPP AL CLIENTE POR SI SE REQUIERE -->
               ${tlfLimpieza ? `<a href="https://wa.me/${tlfLimpieza}?text=${mensajeWpCliente}" target="_blank" class="block text-xs bg-green-600 text-white font-bold px-2.5 py-1 rounded hover:bg-green-700 transition text-center"><i class="fa-brands fa-whatsapp mr-1"></i> Avisar Cliente</a>` : ''}
 
               <button onclick="deleteOrder('${o.idPedido}')" class="block text-xs bg-red-600/80 text-white font-bold px-2.5 py-1 rounded hover:bg-red-700 transition text-center w-full" title="Eliminar Pedido"><i class="fa-solid fa-trash mr-1"></i> Borrar</button>
@@ -647,25 +611,30 @@
         `;
       }).join('');
     }
-
-    async function cambiarStatus(idPedido, nuevoStatus) {
+    
+    async function cambiarStatus(idPedido, nuevoStatus, telefonoCliente, mensajeEncoded) {
       Swal.fire({
         toast: true, position: 'top-end', icon: 'info',
         title: `Actualizando pedido ${idPedido}...`, showConfirmButton: false, timer: 1000,
         background: '#27221f', color: '#ffffff'
       });
-
       const res = await fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: "actualizarStatusPedido", idPedido: idPedido, nuevoStatus: nuevoStatus })
       }).then(r => r.json());
-
       if (res.success) {
         Swal.fire({
           toast: true, position: 'top-end', icon: 'success',
           title: `¡Pedido ${idPedido} ${nuevoStatus}!`, showConfirmButton: false, timer: 1500,
           background: '#27221f', color: '#ffffff'
         });
+        
+        // DISPARAR EL WHATSAPP DIRECTAMENTE AL CLIENTE AL MOMENTO DE CLIC
+        if (nuevoStatus === 'Confirmado' && telefonoCliente) {
+          setTimeout(() => {
+            window.open(`https://wa.me/${telefonoCliente}?text=${mensajeEncoded}`, '_blank');
+          }, 300);
+        }
 
         // Recarga inmediata de los datos en la tabla
         await cargarDatosIniciales();
@@ -678,7 +647,6 @@
         });
       }
     }
-
     function deleteOrder(idPedido) {
       Swal.fire({
         title: '¿Eliminar Pedido?', text: `Se borrará permanentemente la orden ${idPedido}.`,
@@ -699,7 +667,6 @@
         }
       });
     }
-
     function openProductModal() {
       document.getElementById('product-form').reset();
       document.getElementById('prod-id').value = '';
@@ -708,11 +675,9 @@
       currentImageBase64 = null;
       document.getElementById('product-modal').classList.remove('hidden');
     }
-
     function closeProductModal() {
       document.getElementById('product-modal').classList.add('hidden');
     }
-
     function editProduct(id) {
       const prod = productos.find(p => p.id.toString() === id.toString());
       if (!prod) return;
@@ -732,7 +697,6 @@
       document.getElementById('modal-title').innerText = "Editar Producto";
       document.getElementById('product-modal').classList.remove('hidden');
     }
-
     function deleteProduct(id) {
       Swal.fire({
         title: '¿Estás seguro?', text: "Se eliminará permanentemente de la hoja.",
@@ -753,7 +717,6 @@
         }
       });
     }
-
     function previewFileImage(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -765,14 +728,13 @@
         reader.readAsDataURL(input.files[0]);
       }
     }
-
     async function saveProduct(e) {
       e.preventDefault();
       const prod = {
         id: document.getElementById('prod-id').value,
         nombre: document.getElementById('prod-nombre').value,
         categoria: document.getElementById('prod-categoria').value,
-        precio: document.getElementById('prod-precio').value,
+        precio: document.getElementById('prod-precio'].value,
         descripcion: document.getElementById('prod-descripcion').value,
         imagenUrl: document.getElementById('prod-imagen').value,
         imagenBase64: currentImageBase64
