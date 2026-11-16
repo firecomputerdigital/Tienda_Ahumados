@@ -323,23 +323,45 @@
     }
     async function cargarDatosIniciales() {
       try {
-        const resTasa = await fetch(`${API_URL}?action=getTasaBCV`).then(r => r.json());
-        tasaBCV = resTasa.tasa || 36.50;
+        // Añadimos un timestamp (&t=...) para evitar que el navegador use datos viejos en caché
+        const timestamp = new Date().getTime();
+
+        const resTasa = await fetch(`${API_URL}?action=getTasaBCV&t=${timestamp}`).then(r => r.json());
+        tasaBCV = parseFloat(resTasa.tasa) || 36.50;
         fechaBCV = formatearFechaDDMMYYYY(resTasa.fecha);
         document.getElementById('tasa-valor').innerText = tasaBCV.toFixed(2);
         document.getElementById('tasa-fecha').innerText = fechaBCV ? `(${fechaBCV})` : "";
-        const resProds = await fetch(`${API_URL}?action=getProductos`).then(r => r.json());
-        productos = resProds || [];
+
+        const resProds = await fetch(`${API_URL}?action=getProductos&t=${timestamp}`).then(r => r.json());
+        productos = Array.isArray(resProds) ? resProds : [];
         filterProducts();
+
+        // Si el panel de administración está visible, cargamos productos y pedidos
         if (!document.getElementById('admin-dashboard').classList.contains('hidden')) {
           renderAdminTables();
-          const resPedidos = await fetch(`${API_URL}?action=getPedidos`).then(r => r.json());
-          pedidosGlobal = resPedidos || [];
-          renderOrdersTable(pedidosGlobal);
+          
+          const tbodyPedidos = document.getElementById('admin-orders-table');
+          tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gold"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando historial de pedidos...</td></tr>`;
+
+          const resPedidos = await fetch(`${API_URL}?action=getPedidos&t=${timestamp}`).then(r => r.json());
+          
+          if (Array.isArray(resPedidos)) {
+            pedidosGlobal = resPedidos;
+            renderOrdersTable(pedidosGlobal);
+          } else if (resPedidos && resPedidos.error) {
+            tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">Error del servidor: ${resPedidos.error}</td></tr>`;
+          } else {
+            pedidosGlobal = [];
+            renderOrdersTable([]);
+          }
         }
       } catch (e) {
-        console.warn("Modo offline o error al conectar:", e);
+        console.error("Error al conectar con la API:", e);
         filterProducts();
+        const tbodyPedidos = document.getElementById('admin-orders-table');
+        if (tbodyPedidos) {
+          tbodyPedidos.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-400">No se pudo conectar con Google Sheets para leer los pedidos. Verifica tu conexión.</td></tr>`;
+        }
       }
     }
     async function actualizarTasaAdmin() {
